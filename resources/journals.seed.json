@@ -1,0 +1,732 @@
+[
+  {
+    "id": "etransportation",
+    "name": "ETransportation",
+    "impactFactor": 17,
+    "jcrQuartile": "Q1",
+    "casMajor": "材料科学(1区)",
+    "casMinor": "能源与燃料(1区)工程:电子与电气(1区)运输科技(1区)",
+    "issn": "2590-1168",
+    "openalexSourceId": "S4210225447"
+  },
+  {
+    "id": "communications-in-transportation-research",
+    "name": "Communications in Transportation Research",
+    "impactFactor": 14.5,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "交通运输(1区)运输科技(1区)",
+    "issn": "2772-4247",
+    "openalexSourceId": "S4210178498"
+  },
+  {
+    "id": "ieee-transactions-on-intelligent-vehicles",
+    "name": "IEEE Transactions on Intelligent Vehicles",
+    "impactFactor": 14.3,
+    "jcrQuartile": "Q1",
+    "casMajor": "计算机科学(2区)预警标记:Under Review",
+    "casMinor": "计算机:人工智能(2区)工程:电子与电气(2区)运输科技(2区)",
+    "issn": "2379-8858",
+    "openalexSourceId": "S4210199657"
+  },
+  {
+    "id": "analytic-methods-in-accident-research",
+    "name": "Analytic Methods in Accident Research",
+    "impactFactor": 12.6,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "公共卫生、环境卫生与职业卫生(1区)交通运输(1区)",
+    "issn": "2213-6657",
+    "openalexSourceId": "S2898450762"
+  },
+  {
+    "id": "automation-in-construction",
+    "name": "Automation in Construction",
+    "impactFactor": 11.5,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "结构与建筑技术(1区)工程:土木(1区)",
+    "issn": "0926-5805",
+    "openalexSourceId": "S172073041"
+  },
+  {
+    "id": "transport-reviews",
+    "name": "Transport reviews",
+    "impactFactor": 9.9,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "交通运输(1区)",
+    "issn": "0144-1647",
+    "openalexSourceId": "S194388667"
+  },
+  {
+    "id": "computer-aided-civil-and-infrastructure-engineering",
+    "name": "Computer-Aided Civil and Infrastructure Engineering",
+    "impactFactor": 9.1,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "计算机:跨学科应用(1区)结构与建筑技术(1区)工程:土木(1区)运输科技(2区)",
+    "issn": "1093-9687",
+    "openalexSourceId": "S206927758"
+  },
+  {
+    "id": "transportation-research-part-e",
+    "name": "Transportation Research Part E",
+    "impactFactor": 8.8,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "运输科技(2区)经济学(1区)工程:土木(1区)运筹学与管理科学(1区)交通运输(1区)",
+    "issn": "1366-5545",
+    "openalexSourceId": "S173966628"
+  },
+  {
+    "id": "ieee-transactions-on-intelligent-transportation-systems",
+    "name": "IEEE Transactions on Intelligent Transportation Systems",
+    "impactFactor": 8.4,
+    "jcrQuartile": "Q1",
+    "casMajor": "计算机科学(1区)",
+    "casMinor": "工程:土木(1区)工程:电子与电气(2区)运输科技(2区)",
+    "issn": "1524-9050",
+    "openalexSourceId": "S144771191"
+  },
+  {
+    "id": "ieee-transactions-on-transportation-electrification",
+    "name": "IEEE Transactions on Transportation Electrification",
+    "impactFactor": 8.3,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "工程:电子与电气(1区)运输科技(2区)",
+    "issn": "2332-7782",
+    "openalexSourceId": "S4306422867"
+  },
+  {
+    "id": "construction-and-building-materials",
+    "name": "Construction and building materials",
+    "impactFactor": 8,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "结构与建筑技术(2区)工程:土木(1区)材料科学:综合(2区)",
+    "issn": "0950-0618",
+    "openalexSourceId": "S29980478"
+  },
+  {
+    "id": "transportation-research-part-c",
+    "name": "Transportation Research Part C",
+    "impactFactor": 7.9,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "运输科技(1区)",
+    "issn": "0968-090X",
+    "openalexSourceId": "S64511102"
+  },
+  {
+    "id": "journal-of-intelligent-and-connected-vehicles",
+    "name": "Journal of Intelligent and Connected Vehicles",
+    "impactFactor": 7.8,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "运输科技(2区)",
+    "issn": "2399-9802",
+    "openalexSourceId": "S4210173844"
+  },
+  {
+    "id": "transportation-research-part-d",
+    "name": "Transportation Research Part D",
+    "impactFactor": 7.7,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "环境研究(2区)交通运输(1区)运输科技(2区)",
+    "issn": "1361-9209",
+    "openalexSourceId": "S45181156"
+  },
+  {
+    "id": "tunnelling-and-underground-space-technology",
+    "name": "Tunnelling and Underground Space Technology",
+    "impactFactor": 7.4,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "结构与建筑技术(1区)工程:土木(1区)",
+    "issn": "0886-7798",
+    "openalexSourceId": "S139192911"
+  },
+  {
+    "id": "ieee-vehicular-technology-magazine",
+    "name": "IEEE Vehicular Technology Magazine",
+    "impactFactor": 7.2,
+    "jcrQuartile": "Q1",
+    "casMajor": "计算机科学(2区)",
+    "casMinor": "工程:电子与电气(2区)电信学(2区)运输科技(3区)",
+    "issn": "1556-6072",
+    "openalexSourceId": "S98855836"
+  },
+  {
+    "id": "ieee-transactions-on-vehicular-technology",
+    "name": "IEEE Transactions on Vehicular Technology",
+    "impactFactor": 7.1,
+    "jcrQuartile": "Q1",
+    "casMajor": "计算机科学(2区)",
+    "casMinor": "工程:电子与电气(2区)电信学(2区)运输科技(3区)",
+    "issn": "0018-9545",
+    "openalexSourceId": "S10936095"
+  },
+  {
+    "id": "journal-of-traffic-and-transportation-engineering-english-edition",
+    "name": "Journal of Traffic and Transportation Engineering-English Edition",
+    "impactFactor": 6.8,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "工程:土木(2区)运输科技(2区)",
+    "issn": "2095-7564",
+    "openalexSourceId": "S4210170470"
+  },
+  {
+    "id": "transportation-research-part-a",
+    "name": "Transportation Research Part A",
+    "impactFactor": 6.8,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "经济学(1区)交通运输(2区)运输科技(2区)",
+    "issn": "0965-8564",
+    "openalexSourceId": "S159637997"
+  },
+  {
+    "id": "case-studies-in-construction-materials",
+    "name": "Case Studies in Construction Materials",
+    "impactFactor": 6.6,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "结构与建筑技术(2区)工程:土木(2区)材料科学:综合(2区)",
+    "issn": "2214-5095",
+    "openalexSourceId": "S2764881959"
+  },
+  {
+    "id": "vehicular-communications",
+    "name": "Vehicular Communications",
+    "impactFactor": 6.5,
+    "jcrQuartile": "Q1",
+    "casMajor": "计算机科学(2区)",
+    "casMinor": "电信学(2区)运输科技(3区)",
+    "issn": "2214-2096",
+    "openalexSourceId": "S2480748589"
+  },
+  {
+    "id": "journal-of-transport-geography",
+    "name": "Journal of Transport Geography",
+    "impactFactor": 6.3,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "经济学(1区)地理学(1区)交通运输(1区)",
+    "issn": "0966-6923",
+    "openalexSourceId": "S80150607"
+  },
+  {
+    "id": "transportation-research-part-b",
+    "name": "Transportation Research Part B",
+    "impactFactor": 6.3,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "经济学(1区)工程:土木(1区)运筹学与管理科学(2区)交通运输(2区)运输科技(2区)",
+    "issn": "0191-2615",
+    "openalexSourceId": "S96305778"
+  },
+  {
+    "id": "accident-analysis-and-prevention",
+    "name": "Accident Analysis and Prevention",
+    "impactFactor": 6.2,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "人体工程学(1区)公共卫生、环境卫生与职业卫生(1区)社会科学:跨领域(1区)交通运输(2区)",
+    "issn": "0001-4575",
+    "openalexSourceId": "S188336720"
+  },
+  {
+    "id": "travel-behaviour-and-society",
+    "name": "Travel Behaviour and Society",
+    "impactFactor": 5.7,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "交通运输(2区)",
+    "issn": "2214-367X",
+    "openalexSourceId": "S2764874763"
+  },
+  {
+    "id": "ieee-open-journal-of-intelligent-transportation-systems",
+    "name": "IEEE Open Journal of Intelligent Transportation Systems",
+    "impactFactor": 5.3,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "计算机:人工智能(3区)工程:电子与电气(2区)运输科技(3区)",
+    "issn": "2687-7813",
+    "openalexSourceId": "S4210239405"
+  },
+  {
+    "id": "transport-policy",
+    "name": "Transport Policy",
+    "impactFactor": 5.3,
+    "jcrQuartile": "Q1",
+    "casMajor": "工程技术(1区)",
+    "casMinor": "经济学(1区)交通运输(2区)",
+    "issn": "0967-070X",
+    "openalexSourceId": "S186558940"
+  },
+  {
+    "id": "ieee-intelligent-transportation-systems-magazine",
+    "name": "IEEE Intelligent Transportation Systems Magazine",
+    "impactFactor": 5,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "工程:电子与电气(3区)运输科技(3区)",
+    "issn": "1939-1390",
+    "openalexSourceId": "S131000621"
+  },
+  {
+    "id": "maritime-economics-logistics",
+    "name": "Maritime Economics & Logistics",
+    "impactFactor": 4.8,
+    "jcrQuartile": "Q1",
+    "casMajor": "管理学(3区)",
+    "casMinor": "交通运输(3区)",
+    "issn": "1479-2931",
+    "openalexSourceId": "S2764994788"
+  },
+  {
+    "id": "transportation-science",
+    "name": "Transportation Science",
+    "impactFactor": 4.8,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "运筹学与管理科学(2区)交通运输(2区)运输科技(3区)",
+    "issn": "0041-1655",
+    "openalexSourceId": "S130252234"
+  },
+  {
+    "id": "journal-of-safety-research",
+    "name": "Journal of Safety Research",
+    "impactFactor": 4.4,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "公共卫生、环境卫生与职业卫生(2区)社会科学:跨领域(1区)交通运输(2区)",
+    "issn": "0022-4375",
+    "openalexSourceId": "S84525459"
+  },
+  {
+    "id": "research-in-transportation-business-and-management",
+    "name": "Research in Transportation Business and Management",
+    "impactFactor": 4.4,
+    "jcrQuartile": "Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "商业:管理(3区)管理学(3区)交通运输(3区)",
+    "issn": "2210-5395",
+    "openalexSourceId": "S2764779785"
+  },
+  {
+    "id": "transportation-research-part-f",
+    "name": "Transportation Research Part F",
+    "impactFactor": 4.4,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "心理学:应用(2区)交通运输(2区)",
+    "issn": "1369-8478",
+    "openalexSourceId": "S51141438"
+  },
+  {
+    "id": "european-transport-research-review",
+    "name": "European Transport Research Review",
+    "impactFactor": 4.2,
+    "jcrQuartile": "Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "运输科技(3区)交通运输(3区)",
+    "issn": "1866-8887",
+    "openalexSourceId": "S106956883"
+  },
+  {
+    "id": "international-journal-of-sustainable-transportation",
+    "name": "International Journal of Sustainable Transportation",
+    "impactFactor": 3.9,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "环境研究(3区)绿色可持续发展技术(4区)交通运输(3区)",
+    "issn": "1556-8318",
+    "openalexSourceId": "S62510030"
+  },
+  {
+    "id": "journal-of-public-transportation",
+    "name": "Journal of public transportation",
+    "impactFactor": 3.7,
+    "jcrQuartile": "Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "交通运输(3区)",
+    "issn": "1077-291X",
+    "openalexSourceId": "S4210212366"
+  },
+  {
+    "id": "international-journal-of-rail-transportation",
+    "name": "International Journal of Rail Transportation",
+    "impactFactor": 3.6,
+    "jcrQuartile": "Q2",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "2324-8378",
+    "openalexSourceId": "S4210197946"
+  },
+  {
+    "id": "journal-of-air-transport-management",
+    "name": "Journal of Air Transport Management",
+    "impactFactor": 3.6,
+    "jcrQuartile": "Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "交通运输(3区)",
+    "issn": "0969-6997",
+    "openalexSourceId": "S99242495"
+  },
+  {
+    "id": "maritime-policy-management",
+    "name": "Maritime Policy & Management",
+    "impactFactor": 3.6,
+    "jcrQuartile": "Q2",
+    "casMajor": "管理学(3区)",
+    "casMinor": "交通运输(3区)",
+    "issn": "0308-8839",
+    "openalexSourceId": "S155850388"
+  },
+  {
+    "id": "research-in-transportation-economics",
+    "name": "Research in Transportation Economics",
+    "impactFactor": 3.4,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "经济学(3区)交通运输(3区)",
+    "issn": "0739-8859",
+    "openalexSourceId": "S39263009"
+  },
+  {
+    "id": "transportmetrica-b",
+    "name": "Transportmetrica B",
+    "impactFactor": 3.4,
+    "jcrQuartile": "Q2",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "2168-0566",
+    "openalexSourceId": "S2498450034"
+  },
+  {
+    "id": "international-journal-of-pavement-engineering",
+    "name": "International Journal of Pavement Engineering",
+    "impactFactor": 3.3,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "材料科学:表征与测试(2区)结构与建筑技术(3区)工程:土木(3区)",
+    "issn": "1029-8436",
+    "openalexSourceId": "S113349237"
+  },
+  {
+    "id": "journal-of-transport-health",
+    "name": "Journal of Transport & Health",
+    "impactFactor": 3.3,
+    "jcrQuartile": "Q1/Q2",
+    "casMajor": "工程技术(2区)",
+    "casMinor": "公共卫生、环境卫生与职业卫生(2区)交通运输(3区)",
+    "issn": "2214-1405",
+    "openalexSourceId": "S2764685396"
+  },
+  {
+    "id": "transportation",
+    "name": "Transportation",
+    "impactFactor": 3.3,
+    "jcrQuartile": "Q2",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "工程:土木(3区)交通运输(3区)运输科技(3区)",
+    "issn": "0049-4488",
+    "openalexSourceId": "S62009534"
+  },
+  {
+    "id": "transportation-letters-the-international-journal-of-transportation-research",
+    "name": "Transportation Letters-The International Journal of Transportation Research",
+    "impactFactor": 3.3,
+    "jcrQuartile": "Q2",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "运输科技(3区)交通运输(3区)",
+    "issn": "1942-7867",
+    "openalexSourceId": "S70779598"
+  },
+  {
+    "id": "physica-a-statistical-mechanics-and-its-applications",
+    "name": "Physica A: Statistical Mechanics and its Applications",
+    "impactFactor": 3.1,
+    "jcrQuartile": "Q2",
+    "casMajor": "物理与天体物理(2区)",
+    "casMinor": "物理:综合(2区)",
+    "issn": "0378-4371",
+    "openalexSourceId": "S24688465"
+  },
+  {
+    "id": "transportmetrica-a-transport-science",
+    "name": "Transportmetrica A-Transport Science",
+    "impactFactor": 3.1,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "交通运输(3区)运输科技(3区)",
+    "issn": "2324-9935",
+    "openalexSourceId": "S4210177949"
+  },
+  {
+    "id": "journal-of-intelligent-transportation-systems",
+    "name": "Journal of Intelligent Transportation Systems",
+    "impactFactor": 2.8,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "交通运输(3区)运输科技(3区)",
+    "issn": "1024-8072",
+    "openalexSourceId": "S172631016"
+  },
+  {
+    "id": "journal-of-transportation-safety-security",
+    "name": "Journal of Transportation Safety & Security",
+    "impactFactor": 2.6,
+    "jcrQuartile": "Q3",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "1943-9962",
+    "openalexSourceId": "S118740754"
+  },
+  {
+    "id": "iet-intelligent-transport-systems",
+    "name": "IET Intelligent Transport Systems",
+    "impactFactor": 2.5,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "工程:电子与电气(3区)运输科技(3区)",
+    "issn": "1751-956X",
+    "openalexSourceId": "S155689059"
+  },
+  {
+    "id": "journal-of-transportation-engineering-part-b-pavements",
+    "name": "Journal of Transportation Engineering Part B: Pavements",
+    "impactFactor": 2.5,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "2573-5438",
+    "openalexSourceId": "S4210235452"
+  },
+  {
+    "id": "journal-of-transport-and-land-use",
+    "name": "Journal of Transport and Land Use",
+    "impactFactor": 2.2,
+    "jcrQuartile": "Q3",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "1938-7849",
+    "openalexSourceId": "S112590812"
+  },
+  {
+    "id": "international-journal-of-engine-research",
+    "name": "International Journal of Engine Research",
+    "impactFactor": 2.1,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": "工程技术(4区)",
+    "casMinor": "工程:机械(4区)热力学(3区)运输科技(4区)",
+    "issn": "1468-0874",
+    "openalexSourceId": "S53651343"
+  },
+  {
+    "id": "journal-of-transportation-engineering-part-a-systems",
+    "name": "Journal of Transportation Engineering Part A: Systems",
+    "impactFactor": 2.1,
+    "jcrQuartile": "Q3",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "2473-2893",
+    "openalexSourceId": "S4210178838"
+  },
+  {
+    "id": "proceedings-of-the-institution-of-mechanical-engineers-part-f-journal-of-rail-and-rapid-transit",
+    "name": "Proceedings of the Institution of Mechanical Engineers Part F-Journal of Rail and Rapid Transit",
+    "impactFactor": 2.1,
+    "jcrQuartile": "Q2/Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "工程:土木(3区)工程:机械(3区)运输科技(4区)",
+    "issn": "0954-4097",
+    "openalexSourceId": "S97582030"
+  },
+  {
+    "id": "traffic-injury-prevention",
+    "name": "Traffic Injury Prevention",
+    "impactFactor": 1.9,
+    "jcrQuartile": "Q3",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "1538-957X",
+    "openalexSourceId": "S196493665"
+  },
+  {
+    "id": "journal-of-advanced-transportation",
+    "name": "Journal of Advanced Transportation",
+    "impactFactor": 1.8,
+    "jcrQuartile": "Q3",
+    "casMajor": "工程技术(4区)",
+    "casMinor": "工程:土木(4区)运输科技(4区)",
+    "issn": "0197-6729",
+    "openalexSourceId": "S75054922"
+  },
+  {
+    "id": "transportation-research-record",
+    "name": "Transportation Research Record",
+    "impactFactor": 1.8,
+    "jcrQuartile": "Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "工程:土木(3区)运输科技(4区)",
+    "issn": "0361-1981",
+    "openalexSourceId": "S145575934"
+  },
+  {
+    "id": "economics-of-transportation",
+    "name": "Economics of Transportation",
+    "impactFactor": 1.7,
+    "jcrQuartile": "Q2/Q4",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "经济学(4区)交通运输(4区)",
+    "issn": "2212-0122",
+    "openalexSourceId": "S2898237991"
+  },
+  {
+    "id": "international-journal-of-automotive-technology",
+    "name": "International Journal of Automotive Technology",
+    "impactFactor": 1.5,
+    "jcrQuartile": "Q3",
+    "casMajor": "工程技术(4区)",
+    "casMinor": "工程:机械(4区)运输科技(4区)",
+    "issn": "1229-9138",
+    "openalexSourceId": "S93626530"
+  },
+  {
+    "id": "networks-spatial-economics",
+    "name": "Networks & Spatial Economics",
+    "impactFactor": 1.5,
+    "jcrQuartile": "Q3",
+    "casMajor": "工程技术(3区)",
+    "casMinor": "运筹学与管理科学(4区)运输科技(4区)",
+    "issn": "1566-113X",
+    "openalexSourceId": "S80684715"
+  },
+  {
+    "id": "proceedings-of-the-institution-of-mechanical-engineers-part-d-journal-of-automobile-engineering",
+    "name": "Proceedings of The Institution of Mechanical Engineers Part D-Journal of Automobile Engineering",
+    "impactFactor": 1.5,
+    "jcrQuartile": "Q3",
+    "casMajor": "工程技术(4区)",
+    "casMinor": "工程:机械(4区)运输科技(4区)",
+    "issn": "0954-4070",
+    "openalexSourceId": "S16239639"
+  },
+  {
+    "id": "transport",
+    "name": "Transport",
+    "impactFactor": 1.3,
+    "jcrQuartile": "Q4",
+    "casMajor": "工程技术(4区)",
+    "casMinor": "运输科技(4区)",
+    "issn": "1648-3480",
+    "openalexSourceId": "S141734234"
+  },
+  {
+    "id": "international-journal-of-shipping-and-transport-logistics",
+    "name": "International Journal of Shipping and Transport Logistics",
+    "impactFactor": 1.2,
+    "jcrQuartile": "Q4",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "1756-6517",
+    "openalexSourceId": "S52328560"
+  },
+  {
+    "id": "transportation-journal",
+    "name": "Transportation Journal",
+    "impactFactor": 1,
+    "jcrQuartile": "Q4",
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "0041-1612",
+    "openalexSourceId": "S121321708"
+  },
+  {
+    "id": "international-journal-of-vehicle-design",
+    "name": "International Journal of Vehicle Design",
+    "impactFactor": 0.7,
+    "jcrQuartile": "Q4",
+    "casMajor": "工程技术(4区)",
+    "casMinor": "工程:机械(4区)运输科技(4区)",
+    "issn": "0143-3369",
+    "openalexSourceId": "S70176213"
+  },
+  {
+    "id": "engineering-applications-of-artificial-intelligence",
+    "name": "Engineering Applications of Artificial Intelligence",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": "计算机科学(1区)",
+    "casMinor": "工程:综合(1区)自动化与控制系统(1区)计算机:人工智能(2区)工程:电子与电气(2区)",
+    "issn": "0952-1976",
+    "openalexSourceId": "S900972176"
+  },
+  {
+    "id": "expert-systems-with-applications",
+    "name": "Expert Systems With Applications",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": "计算机科学(1区)",
+    "casMinor": "计算机:人工智能(2区)工程:电子与电气(1区)运筹学与管理科学(2区)",
+    "issn": "0957-4174",
+    "openalexSourceId": "S13144211"
+  },
+  {
+    "id": "ocean-engineering",
+    "name": "Ocean Engineering",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": "工程技术(2区)",
+    "casMinor": "工程:海洋(1区)工程:大洋(1区)海洋学(1区)工程:土木(2区)",
+    "issn": "0029-8018",
+    "openalexSourceId": "S76910236"
+  },
+  {
+    "id": "railway-engineering-science",
+    "name": "Railway Engineering Science",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": "工程技术(1区)",
+    "casMinor": "运输科技(2区)",
+    "issn": "2662-4745",
+    "openalexSourceId": "S3034255040"
+  },
+  {
+    "id": "safety-science",
+    "name": "Safety Science",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": "工程技术(2区)",
+    "casMinor": "工程:工业(2区)运筹学与管理科学(2区)",
+    "issn": "0925-7535",
+    "openalexSourceId": "S123149298"
+  },
+  {
+    "id": "science-of-the-total-environment",
+    "name": "Science of the total environment",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": null,
+    "casMinor": null,
+    "issn": "0048-9697",
+    "openalexSourceId": "S86852077"
+  },
+  {
+    "id": "transportmetrica-b-transport-dynamics",
+    "name": "Transportmetrica B-Transport Dynamics",
+    "impactFactor": null,
+    "jcrQuartile": null,
+    "casMajor": "工程技术(2区)",
+    "casMinor": "交通运输(3区)运输科技(3区)",
+    "issn": "2168-0566",
+    "openalexSourceId": "S2498450034"
+  }
+]
