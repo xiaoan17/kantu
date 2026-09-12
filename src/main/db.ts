@@ -1,5 +1,6 @@
-import DatabaseImport from 'better-sqlite3'
+import Database from 'better-sqlite3'
 import type { FetchSummary, JournalMeta, Paper, PapersQuery } from '../shared/contract'
+import { escapeLike } from './utils'
 
 export interface JournalSeedEntry {
   id: string
@@ -21,21 +22,6 @@ export interface NewPaper {
   publicationDate: string | null
   citedByCount: number
 }
-
-interface Statement {
-  run(...params: unknown[]): { changes: number; lastInsertRowid: number | bigint }
-  get(...params: unknown[]): unknown
-  all(...params: unknown[]): unknown[]
-}
-
-interface SqliteDatabase {
-  exec(sql: string): unknown
-  prepare(sql: string): Statement
-  transaction<F extends (...args: never[]) => unknown>(fn: F): F
-  close(): void
-}
-
-const Database = DatabaseImport as unknown as new (path: string) => SqliteDatabase
 
 interface JournalRow {
   id: string
@@ -65,10 +51,10 @@ interface PaperRow {
   has_embedding: number
 }
 
-let db: SqliteDatabase | null = null
+let db: Database.Database | null = null
 let fetchRunning = false
 
-function getDb(): SqliteDatabase {
+function getDb(): Database.Database {
   if (!db) throw new Error('数据库未初始化，请先调用 initDatabase')
   return db
 }
@@ -127,16 +113,6 @@ export function initDatabase(dbPath: string): void {
       cas_minor TEXT,
       fetch_status TEXT NOT NULL DEFAULT 'pending',
       last_fetched_at TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS issues (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      journal_id TEXT NOT NULL REFERENCES journals(id),
-      volume TEXT,
-      issue TEXT,
-      year INTEGER,
-      issue_key TEXT NOT NULL,
-      UNIQUE (journal_id, issue_key)
     );
 
     CREATE TABLE IF NOT EXISTS papers (
@@ -224,8 +200,9 @@ export function listPapers(q: PapersQuery): Paper[] {
     params.push(q.journalId)
   }
   if (q.query) {
-    where.push('(title LIKE ? OR abstract LIKE ?)')
-    params.push(`%${q.query}%`, `%${q.query}%`)
+    where.push(`(title LIKE ? ESCAPE '\\' OR abstract LIKE ? ESCAPE '\\')`)
+    const pattern = `%${escapeLike(q.query)}%`
+    params.push(pattern, pattern)
   }
   const limit = q.limit ?? 100
   const offset = q.offset ?? 0
@@ -247,15 +224,6 @@ export function upsertIssuePapers(
   papers: NewPaper[]
 ): void {
   const database = getDb()
-  const issueKey = `${issue.volume ?? ''}|${issue.issue ?? ''}|${issue.year ?? ''}`
-  const upsertIssue = database.prepare(`
-    INSERT INTO issues (journal_id, volume, issue, year, issue_key)
-    VALUES (?, ?, ?, ?, ?)
-    ON CONFLICT(journal_id, issue_key) DO UPDATE SET
-      volume = excluded.volume,
-      issue = excluded.issue,
-      year = excluded.year
-  `)
   const upsertPaper = database.prepare(`
     INSERT INTO papers (id, journal_id, volume, issue, publication_date, title, abstract, doi, authors, cited_by_count)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -271,7 +239,6 @@ export function upsertIssuePapers(
       cited_by_count = excluded.cited_by_count
   `)
   database.transaction((items: NewPaper[]): void => {
-    upsertIssue.run(journalId, issue.volume, issue.issue, issue.year, issueKey)
     for (const p of items) {
       upsertPaper.run(
         p.id,
@@ -319,6 +286,10 @@ export function setFetchRunning(running: boolean): void {
   fetchRunning = running
 }
 
+export function isFetchRunning(): boolean {
+  return fetchRunning
+}
+
 export function getPapersMissingEmbeddings(
   limit: number
 ): { id: string; title: string; abstract: string }[] {
@@ -352,7 +323,7 @@ export function getEmbeddingsWithMeta(): {
   title: string
   publicationDate: string | null
   doi: string | null
-  vector: number[]
+  vector: Float32Array
 }[] {
   const rows = getDb()
     .prepare(
@@ -373,8 +344,14 @@ export function getEmbeddingsWithMeta(): {
     title: row.title,
     publicationDate: row.publication_date,
     doi: row.doi,
-    vector: Array.from(
-      new Float32Array(row.embedding.buffer, row.embedding.byteOffset, row.embedding.byteLength / 4)
-    )
+    vector:
+      row.embedding.byteOffset % 4 === 0
+        ? new Float32Array(row.embedding.buffer, row.embedding.byteOffset, row.embedding.byteLength / 4)
+        : new Float32Array(
+            row.embedding.buffer.slice(
+              row.embedding.byteOffset,
+              row.embedding.byteOffset + row.embedding.byteLength
+            )
+          )
   }))
 }

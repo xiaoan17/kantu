@@ -6,7 +6,8 @@ import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import eslintPluginReactRefresh from 'eslint-plugin-react-refresh'
 
 export default defineConfig(
-  { ignores: ['**/node_modules', '**/dist', '**/out'] },
+  // scripts/ 为一次性数据处理脚本（纯 JS），不套用 TS 规则
+  { ignores: ['**/node_modules', '**/dist', '**/out', 'scripts/**'] },
   tseslint.configs.recommended,
   eslintPluginReact.configs.flat.recommended,
   eslintPluginReact.configs.flat['jsx-runtime'],
@@ -25,7 +26,9 @@ export default defineConfig(
     },
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
-      ...eslintPluginReactRefresh.configs.vite.rules
+      ...eslintPluginReactRefresh.configs.vite.rules,
+      // 页面挂载时通过 IPC 拉取初始数据是本应用的标准模式，该规则误伤过多
+      'react-hooks/set-state-in-effect': 'off'
     }
   },
   eslintConfigPrettier

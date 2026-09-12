@@ -19,14 +19,6 @@ export interface JournalMeta {
   paperCount: number
 }
 
-export interface IssueInfo {
-  journalId: string
-  volume: string | null
-  issue: string | null
-  year: number | null
-  paperCount: number
-}
-
 export interface Paper {
   id: string // OpenAlex work id 尾段，如 'W123456789'
   journalId: string
@@ -64,7 +56,7 @@ export interface EvidencePaper {
 
 export interface JournalRecommendation {
   journal: JournalMeta
-  score: number // 期刊聚合得分（Top-10 证据相似度均值）
+  score: number // 期刊聚合得分（Top-10 相似度之和 / 10，语料不足 10 篇的期刊按缺失计 0，避免小样本占优）
   evidence: EvidencePaper[] // 每刊 Top-3
 }
 
@@ -90,9 +82,14 @@ export interface AppSettings {
   embeddingProvider: EmbeddingProvider // 默认 'local'：内置 ONNX 模型离线推理
   localEmbeddingModel: string // LOCAL_EMBEDDING_MODELS 中的 id
   embeddingBaseUrl: string // OpenAI 兼容端点，默认 https://api.openai.com/v1
-  embeddingApiKey: string
+  embeddingApiKey: string // settingsGet 返回时恒为空串（密钥不回传渲染进程）；settingsSet 传空串表示保持原值
   embeddingModel: string // 默认 'text-embedding-3-small'
   mailto: string // OpenAlex 礼貌池邮箱，可空
+}
+
+/** settingsGet 返回给渲染进程的快照：不含密钥明文，只带"是否已配置"标记。 */
+export interface SettingsSnapshot extends AppSettings {
+  embeddingApiKeyConfigured: boolean
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -116,6 +113,7 @@ export interface FetchProgress {
 }
 
 export interface EmbedProgress {
+  status: 'running' | 'done' | 'error'
   total: number
   done: number
   message: string
@@ -162,7 +160,7 @@ export interface TjmApi {
   listPapers(q: PapersQuery): Promise<Paper[]>
   runRecommend(input: RecommendInput): Promise<JournalRecommendation[]>
   runEmbedding(): Promise<void>
-  getSettings(): Promise<AppSettings>
+  getSettings(): Promise<SettingsSnapshot>
   setSettings(s: AppSettings): Promise<void>
   onFetchProgress(cb: (p: FetchProgress) => void): () => void
   onEmbedProgress(cb: (p: EmbedProgress) => void): () => void

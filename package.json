@@ -1,23 +1,24 @@
 {
   "name": "transport-journal-match",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "交通运输领域投稿期刊匹配桌面工具：本地语料库 + 离线 Embedding 语义推荐",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "xiaoan17",
+  "homepage": "https://github.com/xiaoan17/transport-journal-match",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test": "vitest run",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
@@ -26,14 +27,14 @@
     "@huggingface/transformers": "^4.2.0",
     "better-sqlite3": "^13.0.3",
     "lucide-react": "^1.42.0",
-    "onnxruntime-web": "^1.29.0",
-    "zod": "^4.5.4"
+    "onnxruntime-web": "^1.29.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@tailwindcss/vite": "^4.3.3",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -50,7 +51,8 @@
     "react-dom": "^19.2.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "vite": "^7.2.6",
+    "vitest": "^4.0.0"
   },
   "allowScripts": {
     "better-sqlite3@13.0.3": true,

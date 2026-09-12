@@ -7,6 +7,7 @@ import type {
   PapersQuery,
   RecommendInput,
   AppSettings,
+  SettingsSnapshot,
   JournalMeta,
   FetchProgress,
   EmbedProgress
@@ -18,6 +19,7 @@ import {
   listPapers,
   getFetchSummary,
   setFetchRunning,
+  isFetchRunning,
   clearEmbeddings,
   type JournalSeedEntry
 } from './db'
@@ -53,10 +55,13 @@ export function initAppData(): void {
   if (seed.length > 0) seedJournals(seed)
 }
 
+let embedRunning = false
+
 export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.journalsList, (): JournalMeta[] => listJournals())
 
-  ipcMain.handle(IPC.fetchStart, async (_e, journalIds?: string[]): Promise<void> => {
+  ipcMain.handle(IPC.fetchStart, (_e, journalIds?: string[]): void => {
+    if (isFetchRunning()) return
     setFetchRunning(true)
     void startFetch(journalIds, (p: FetchProgress) => broadcast(IPC.evtFetchProgress, p))
       .catch((err) => console.error('[fetch] 失败', err))
@@ -69,29 +74,41 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC.recommendRun, (_e, input: RecommendInput) => recommend(input))
 
-  ipcMain.handle(IPC.embedRun, async (): Promise<void> => {
-    void runEmbeddingForPending((p: EmbedProgress) =>
-      broadcast(IPC.evtEmbedProgress, p)
-    ).catch((err) => {
-      console.error('[embed] 失败', err)
-      broadcast(IPC.evtEmbedProgress, {
-        total: 1,
-        done: 0,
-        message: `向量化失败：${err instanceof Error ? err.message : String(err)}`
+  ipcMain.handle(IPC.embedRun, (): void => {
+    if (embedRunning) return
+    embedRunning = true
+    void runEmbeddingForPending((p: EmbedProgress) => broadcast(IPC.evtEmbedProgress, p))
+      .catch((err) => {
+        console.error('[embed] 失败', err)
+        const payload: EmbedProgress = {
+          status: 'error',
+          total: 0,
+          done: 0,
+          message: `向量化失败：${err instanceof Error ? err.message : String(err)}`
+        }
+        broadcast(IPC.evtEmbedProgress, payload)
       })
-    })
+      .finally(() => {
+        embedRunning = false
+      })
   })
 
-  ipcMain.handle(IPC.settingsGet, (): AppSettings => ({ ...DEFAULT_SETTINGS, ...getSettings() }))
+  ipcMain.handle(IPC.settingsGet, (): SettingsSnapshot => {
+    const s = { ...DEFAULT_SETTINGS, ...getSettings() }
+    return { ...s, embeddingApiKey: '', embeddingApiKeyConfigured: s.embeddingApiKey !== '' }
+  })
 
   ipcMain.handle(IPC.settingsSet, (_e, s: AppSettings): void => {
     const prev = getSettings()
-    setSettings(s)
+    // 渲染进程拿不到密钥明文，传空串表示保持原值
+    const next: AppSettings = { ...s, embeddingApiKey: s.embeddingApiKey || prev.embeddingApiKey }
+    setSettings(next)
     const modelChanged =
-      prev.embeddingProvider !== s.embeddingProvider ||
-      prev.localEmbeddingModel !== s.localEmbeddingModel ||
-      (s.embeddingProvider === 'remote' &&
-        (prev.embeddingBaseUrl !== s.embeddingBaseUrl || prev.embeddingModel !== s.embeddingModel))
+      prev.embeddingProvider !== next.embeddingProvider ||
+      prev.localEmbeddingModel !== next.localEmbeddingModel ||
+      (next.embeddingProvider === 'remote' &&
+        (prev.embeddingBaseUrl !== next.embeddingBaseUrl ||
+          prev.embeddingModel !== next.embeddingModel))
     if (modelChanged) {
       clearEmbeddings()
       console.log('[settings] embedding 模型配置已变更，已清空旧向量')
