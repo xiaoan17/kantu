@@ -32,17 +32,26 @@ function Field({
 
 function SettingsPage(): React.JSX.Element {
   const [form, setForm] = useState<AppSettings>(DEFAULT_SETTINGS)
+  const [apiKeyConfigured, setApiKeyConfigured] = useState(false)
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    window.tjm.getSettings().then(setForm)
+    window.tjm.getSettings().then((s) => {
+      setApiKeyConfigured(s.embeddingApiKeyConfigured)
+      setForm(s)
+    })
   }, [])
 
   const save = async (): Promise<void> => {
     setSaving(true)
     try {
       await window.tjm.setSettings(form)
+      if (form.embeddingApiKey) {
+        setApiKeyConfigured(true)
+        // 密钥已加密落盘，界面上不保留明文
+        setForm((prev) => ({ ...prev, embeddingApiKey: '' }))
+      }
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } finally {
@@ -121,7 +130,7 @@ function SettingsPage(): React.JSX.Element {
               label="Embedding API Key"
               type="password"
               value={form.embeddingApiKey}
-              placeholder="sk-…"
+              placeholder={apiKeyConfigured ? '已配置（留空保持不变）' : 'sk-…'}
               onChange={update('embeddingApiKey')}
             />
             <Field

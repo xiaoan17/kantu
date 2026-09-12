@@ -1,5 +1,6 @@
 import { getEmbeddingsWithMeta, listJournals } from './db'
 import { embedTexts } from './embed'
+import { cosine, casZone } from './utils'
 import type {
   EvidencePaper,
   JournalMeta,
@@ -10,25 +11,6 @@ import type {
 const TOP_N_FOR_SCORE = 10
 const TOP_N_EVIDENCE = 3
 
-function cosine(a: number[], b: number[]): number {
-  let dot = 0
-  let normA = 0
-  let normB = 0
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i]
-    normA += a[i] * a[i]
-    normB += b[i] * b[i]
-  }
-  if (normA === 0 || normB === 0) return 0
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB))
-}
-
-function casZone(casMajor: string | null): number | null {
-  if (!casMajor) return null
-  const m = casMajor.match(/[（(]\s*(\d+)\s*区[)）]/)
-  return m ? Number(m[1]) : null
-}
-
 function passesFilters(journal: JournalMeta, input: RecommendInput): boolean {
   const filters = input.filters
   if (!filters) return true
@@ -38,8 +20,9 @@ function passesFilters(journal: JournalMeta, input: RecommendInput): boolean {
     }
   }
   if (filters.casZoneMax != null) {
+    // 无法解析分区（含无分区数据）的期刊视为不满足分区上限条件
     const zone = casZone(journal.casMajor)
-    if (zone !== null && zone > filters.casZoneMax) return false
+    if (zone === null || zone > filters.casZoneMax) return false
   }
   return true
 }
@@ -82,7 +65,8 @@ export async function recommend(input: RecommendInput): Promise<JournalRecommend
     if (!journal || !passesFilters(journal, input)) continue
     items.sort((a, b) => b.sim - a.sim)
     const top = items.slice(0, TOP_N_FOR_SCORE)
-    const score = top.reduce((sum, it) => sum + it.sim, 0) / top.length
+    // 固定分母：语料不足 10 篇的期刊按缺失计 0，避免单篇高相似的小样本期刊冲顶
+    const score = top.reduce((sum, it) => sum + it.sim, 0) / TOP_N_FOR_SCORE
     const evidence: EvidencePaper[] = items.slice(0, TOP_N_EVIDENCE).map((it) => ({
       paperId: it.row.paperId,
       title: it.row.title,

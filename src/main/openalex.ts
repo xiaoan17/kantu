@@ -28,6 +28,8 @@ const NO_ISSUE_KEY = '__no_issue__'
 const NO_ISSUE_MAX_PAPERS = 200
 const MIN_REQUEST_INTERVAL_MS = 120
 const MAX_RETRIES = 3
+// 分页兜底上限（200 条/页）。防止无 volume/issue 信息的期刊把整个语料翻到底
+const MAX_PAGES = 25
 
 let lastRequestAt = 0
 
@@ -65,7 +67,7 @@ async function fetchJson(url: string): Promise<unknown> {
   }
 }
 
-function restoreAbstract(index: Record<string, number[]>): string {
+export function restoreAbstract(index: Record<string, number[]>): string {
   const words: string[] = []
   for (const [word, positions] of Object.entries(index)) {
     for (const pos of positions) words[pos] = word
@@ -73,7 +75,7 @@ function restoreAbstract(index: Record<string, number[]>): string {
   return words.filter(Boolean).join(' ')
 }
 
-function parseYear(date: string | null | undefined): number | null {
+export function parseYear(date: string | null | undefined): number | null {
   const m = /^(\d{4})/.exec(date ?? '')
   return m ? Number(m[1]) : null
 }
@@ -112,7 +114,7 @@ export async function fetchRecentIssues(
   const groups = new Map<string, { issue: IssueRef; papers: NewPaper[]; latest: string }>()
   let cursor = '*'
 
-  for (;;) {
+  for (let page = 0; page < MAX_PAGES; page++) {
     const params = new URLSearchParams({
       filter,
       sort: 'publication_date:desc',
@@ -128,6 +130,7 @@ export async function fetchRecentIssues(
     if (results.length === 0) break
 
     let stop = false
+    let pageAdded = false
     for (const work of results) {
       const volume = work.biblio?.volume || null
       const issue = work.biblio?.issue || null
@@ -143,6 +146,7 @@ export async function fetchRecentIssues(
       }
       if (key !== NO_ISSUE_KEY || group.papers.length < NO_ISSUE_MAX_PAPERS) {
         group.papers.push(toNewPaper(work))
+        pageAdded = true
       }
       const date = work.publication_date ?? ''
       if (date > group.latest) {
@@ -150,7 +154,8 @@ export async function fetchRecentIssues(
         group.issue.year = parseYear(work.publication_date) ?? group.issue.year
       }
     }
-    if (stop) break
+    // 整页没有收进任何论文（全部落入已满的无期号分组）时，继续翻页只是浪费请求
+    if (stop || !pageAdded) break
     const next = data.meta?.next_cursor
     if (!next || next === cursor) break
     cursor = next

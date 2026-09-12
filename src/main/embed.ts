@@ -59,12 +59,20 @@ function sendToWorker<T extends WorkerReply['type']>(
       localEngine = null
       reject(new Error(`本地 Embedding 线程异常：${err.message}`))
     }
+    // 不监听 exit 的话，worker 静默退出（OOM 等）会让本 Promise 永久挂起
+    const onExit = (code: number): void => {
+      cleanup()
+      localEngine = null
+      reject(new Error(`本地 Embedding 线程已退出（exit code ${code}）`))
+    }
     const cleanup = (): void => {
       worker.off('message', onMessage)
       worker.off('error', onError)
+      worker.off('exit', onExit)
     }
     worker.on('message', onMessage)
     worker.on('error', onError)
+    worker.on('exit', onExit)
     worker.postMessage(msg)
   })
 }
@@ -137,7 +145,10 @@ export async function runEmbeddingForPending(
   const batchSize = local ? LOCAL_BATCH_SIZE : BATCH_SIZE
   const pending = getPapersMissingEmbeddings(100000)
   const total = pending.length
-  if (total === 0) return
+  if (total === 0) {
+    onProgress({ status: 'done', total: 0, done: 0, message: '没有待向量化的论文' })
+    return
+  }
   let done = 0
   for (let i = 0; i < pending.length; i += batchSize) {
     const batch = pending.slice(i, i + batchSize)
@@ -145,6 +156,7 @@ export async function runEmbeddingForPending(
     const vectors = await embedTexts(texts)
     saveEmbeddings(batch.map((p, j) => ({ id: p.id, vector: vectors[j] })))
     done += batch.length
-    onProgress({ total, done, message: `已向量化 ${done}/${total} 篇论文` })
+    onProgress({ status: 'running', total, done, message: `已向量化 ${done}/${total} 篇论文` })
   }
+  onProgress({ status: 'done', total, done, message: `向量化完成，共 ${done} 篇` })
 }

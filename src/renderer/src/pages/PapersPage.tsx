@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Search, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
 import type { JournalMeta, Paper } from '../../../shared/contract'
 
@@ -57,31 +57,41 @@ function PapersPage(): React.JSX.Element {
   const [journals, setJournals] = useState<JournalMeta[]>([])
   const [journalId, setJournalId] = useState('')
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [papers, setPapers] = useState<Paper[]>([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(false)
+  // 请求序号：快速切换筛选时丢弃晚到的过期响应，避免旧结果覆盖新结果
+  const requestSeq = useRef(0)
 
   useEffect(() => {
     window.tjm.listJournals().then(setJournals)
   }, [])
 
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 300)
+    return () => clearTimeout(t)
+  }, [query])
+
   const load = useCallback(
     async (offset: number, append: boolean): Promise<void> => {
+      const seq = ++requestSeq.current
       setLoading(true)
       try {
         const list = await window.tjm.listPapers({
           journalId: journalId || undefined,
-          query: query.trim() || undefined,
+          query: debouncedQuery.trim() || undefined,
           limit: PAGE_SIZE,
           offset
         })
+        if (seq !== requestSeq.current) return
         setPapers((prev) => (append ? [...prev, ...list] : list))
         setHasMore(list.length === PAGE_SIZE)
       } finally {
-        setLoading(false)
+        if (seq === requestSeq.current) setLoading(false)
       }
     },
-    [journalId, query]
+    [journalId, debouncedQuery]
   )
 
   useEffect(() => {

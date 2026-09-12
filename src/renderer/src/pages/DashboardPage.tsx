@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { RefreshCw, Cpu } from 'lucide-react'
+import { RefreshCw, Cpu, AlertTriangle } from 'lucide-react'
 import type { EmbedProgress, FetchProgress, FetchSummary, JournalMeta } from '../../../shared/contract'
 import ProgressBar from '../components/ProgressBar'
 
@@ -34,7 +34,7 @@ function DashboardPage(): React.JSX.Element {
     })
     const offEmbed = window.tjm.onEmbedProgress((p) => {
       setEmbedProgress(p)
-      if (p.done >= p.total) refresh()
+      if (p.status !== 'running') refresh()
     })
     return () => {
       offFetch()
@@ -116,7 +116,7 @@ function DashboardPage(): React.JSX.Element {
         </div>
       )}
 
-      {embedProgress && embedProgress.done < embedProgress.total && (
+      {embedProgress && embedProgress.status === 'running' && (
         <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="font-medium text-slate-700">正在向量化</span>
@@ -126,6 +126,16 @@ function DashboardPage(): React.JSX.Element {
           </div>
           <ProgressBar value={embedProgress.done} max={embedProgress.total} />
           <p className="mt-2 text-xs text-slate-500">{embedProgress.message}</p>
+        </div>
+      )}
+
+      {embedProgress && embedProgress.status === 'error' && (
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+          <div>
+            <p className="font-semibold">向量化失败</p>
+            <p className="mt-1">{embedProgress.message}</p>
+          </div>
         </div>
       )}
 
