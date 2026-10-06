@@ -20,6 +20,7 @@
     "build:local": "npm run build && electron-builder --mac --dir -c.mac.identity=-",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
+    "build:mac:adhoc": "npm run build && electron-builder --mac -c.mac.identity=-",
     "build:linux": "electron-vite build && electron-builder --linux",
     "backfill-abstracts": "node scripts/backfill-abstracts.mjs",
     "backfill-browser": "node scripts/browser-backfill.mjs plan && node scripts/browser-backfill.mjs run",

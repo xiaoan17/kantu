@@ -52,7 +52,19 @@ npm run build:local
 open dist/mac-arm64/刊途.app     # Apple Silicon；Intel Mac 目录为 mac
 ```
 
-分发安装包：`npm run build:mac`（dmg + zip）、`build:win`、`build:linux`。
+分发安装包（dmg + zip）：
+
+```bash
+npm run build:mac:adhoc    # 推荐：ad-hoc 签名，不联网
+npm run build:mac          # 有 Developer ID 证书时用；需要能访问 Apple 时间戳服务器
+npm run build:win
+npm run build:linux
+```
+
+> **`build:mac` 会在本机装有代码签名证书时自动使用它，而 `codesign --timestamp`
+> 需要联上 Apple 时间戳服务器；该网络不通时会卡死在 codesign 且不报错**（进程 `STAT=S`、
+> CPU 接近 0）。本项目的分发包未公证，直接用 `build:mac:adhoc` 即可——它与 `build:local`
+> 的签名方式一致，跳过时间戳服务器，几十秒完成。
 
 ## 技术栈
 
