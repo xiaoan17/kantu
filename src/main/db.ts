@@ -97,7 +97,11 @@ const JOURNAL_SELECT = `
 `
 
 export function initDatabase(dbPath: string): void {
+  db?.close()
   db = new Database(dbPath)
+  db.function('has_abstract', { deterministic: true }, (value: unknown) =>
+    typeof value === 'string' && value.trim().length > 0 ? 1 : 0
+  )
   db.exec(`
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
@@ -168,6 +172,21 @@ export function seedJournals(seed: JournalSeedEntry[]): void {
       `UPDATE papers SET journal_id = 'transportmetrica-b' WHERE journal_id = 'transportmetrica-b-transport-dynamics'`
     )
     .run()
+  // 仅历史数据库可能包含 issues 表；新数据库没有该表。
+  const hasIssues = getDb()
+    .prepare(`SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'issues'`)
+    .get()
+  if (hasIssues) {
+    // UNIQUE(journal_id, issue_key) 冲突时保留已迁移的记录，再删除旧 id 的冲突行。
+    getDb()
+      .prepare(
+        `UPDATE OR IGNORE issues SET journal_id = 'transportmetrica-b' WHERE journal_id = 'transportmetrica-b-transport-dynamics'`
+      )
+      .run()
+    getDb()
+      .prepare(`DELETE FROM issues WHERE journal_id = 'transportmetrica-b-transport-dynamics'`)
+      .run()
+  }
   getDb().prepare(`DELETE FROM journals WHERE id = 'transportmetrica-b-transport-dynamics'`).run()
 }
 
@@ -220,6 +239,8 @@ export function listPapers(q: PapersQuery): Paper[] {
     const pattern = `%${escapeLike(q.query)}%`
     params.push(pattern, pattern)
   }
+  if (q.abstractFilter === 'with') where.push('has_abstract(abstract) = 1')
+  if (q.abstractFilter === 'without') where.push('has_abstract(abstract) = 0')
   const limit = q.limit ?? 100
   const offset = q.offset ?? 0
   const sql = `
@@ -227,7 +248,7 @@ export function listPapers(q: PapersQuery): Paper[] {
            cited_by_count, embedding IS NOT NULL AS has_embedding
     FROM papers
     ${where.length > 0 ? `WHERE ${where.join(' AND ')}` : ''}
-    ORDER BY publication_date DESC
+    ORDER BY publication_date DESC, id ASC
     LIMIT ? OFFSET ?
   `
   const rows = getDb()
@@ -285,7 +306,7 @@ export function getFetchSummary(): FetchSummary {
   const p = getDb()
     .prepare(
       `SELECT COUNT(*) AS total,
-              COALESCE(SUM(CASE WHEN abstract IS NOT NULL AND abstract != '' THEN 1 ELSE 0 END), 0) AS with_abstract,
+              COALESCE(SUM(CASE WHEN has_abstract(abstract) = 1 THEN 1 ELSE 0 END), 0) AS with_abstract,
               COALESCE(SUM(CASE WHEN embedding IS NOT NULL THEN 1 ELSE 0 END), 0) AS with_embedding
        FROM papers`
     )
@@ -314,7 +335,7 @@ export function getPapersMissingEmbeddings(
   return getDb()
     .prepare(
       `SELECT id, title, abstract FROM papers
-       WHERE embedding IS NULL AND abstract IS NOT NULL AND abstract != ''
+       WHERE embedding IS NULL AND has_abstract(abstract) = 1
        ORDER BY publication_date DESC
        LIMIT ?`
     )
@@ -346,7 +367,7 @@ export function getEmbeddingsWithMeta(): {
   const rows = getDb()
     .prepare(
       `SELECT id, journal_id, title, publication_date, doi, embedding FROM papers
-       WHERE embedding IS NOT NULL AND abstract IS NOT NULL AND abstract != ''`
+       WHERE embedding IS NOT NULL AND has_abstract(abstract) = 1`
     )
     .all() as {
     id: string

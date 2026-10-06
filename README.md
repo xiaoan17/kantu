@@ -11,6 +11,8 @@
 - **语义推荐**：对查询论文与语料库做余弦相似度检索，按期刊聚合 Top-K 证据给出推荐得分
 - **可选远程 API**：设置页可切换为任意 OpenAI 兼容的 Embedding 服务（OpenAI / Kimi / DashScope 等）
 
+- **论文库分页**：每页最多 10 篇，按需翻页且不累积旧页；支持期刊、摘要状态和关键词组合筛选，更新结果时保留原列表以避免闪烁
+
 ## 技术栈
 
 Electron + React 19 + TypeScript + Tailwind CSS 4 + better-sqlite3 + electron-vite
@@ -25,6 +27,19 @@ npm run dev
 ```
 
 ## 构建
+
+`npm run dev` 打开开发窗口，`npm run build` 只生成 `out/` 编译文件；两者都不会生成独立的 `.app`。
+
+在 Mac 上生成可双击启动的本地应用：
+
+```bash
+npm run build:local
+open dist/mac-arm64/transport-journal-match.app  # Apple Silicon；Intel Mac 的目录为 mac
+```
+
+`build:local` 使用 ad-hoc 签名，不会自动选择本机钥匙串中的证书，也不会生成 DMG 或安装到 `/Applications`。需要安装时，可把生成的 `.app` 拖入“应用程序”目录。
+
+生成分发安装包：
 
 ```bash
 npm run build:mac    # macOS (dmg + zip)

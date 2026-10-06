@@ -8,6 +8,7 @@ extraResources:
 directories:
   buildResources: build
 files:
+  - '!scripts/**'
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'

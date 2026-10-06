@@ -28,7 +28,7 @@ function App(): React.JSX.Element {
   return (
     <div className="flex h-screen overflow-hidden bg-base text-body">
       <Sidebar page={page} onNavigate={setPage} />
-      <main className="flex-1 overflow-y-auto p-8">
+      <main className="min-w-0 flex-1 overflow-y-auto p-8 [scrollbar-gutter:stable]">
         <Page />
       </main>
     </div>

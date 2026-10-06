@@ -5,6 +5,8 @@
 
 // ---------- 数据模型 ----------
 
+export type AbstractFilter = 'all' | 'with' | 'without'
+
 export interface JournalMeta {
   id: string // 稳定 slug，如 'transportation-research-part-c'
   name: string
@@ -147,6 +149,7 @@ export const IPC = {
 } as const
 
 export interface PapersQuery {
+  abstractFilter?: AbstractFilter
   journalId?: string
   query?: string // 标题/摘要模糊搜索
   limit?: number

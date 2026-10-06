@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Search, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
-import type { JournalMeta, Paper } from '../../../shared/contract'
+import type { AbstractFilter, JournalMeta, Paper } from '../../../shared/contract'
 
-const PAGE_SIZE = 100
+const PAGE_SIZE = 10
 
 function PaperCard({ paper }: { paper: Paper }): React.JSX.Element {
   const [expanded, setExpanded] = useState(false)
@@ -33,7 +33,7 @@ function PaperCard({ paper }: { paper: Paper }): React.JSX.Element {
         {(paper.volume || paper.issue) &&
           ` · Vol. ${paper.volume ?? '—'}${paper.issue ? `, Issue ${paper.issue}` : ''}`}
       </p>
-      {paper.abstract && (
+      {paper.abstract?.trim() ? (
         <div className="mt-3">
           <button
             onClick={() => setExpanded((v) => !v)}
@@ -48,6 +48,8 @@ function PaperCard({ paper }: { paper: Paper }): React.JSX.Element {
             </p>
           )}
         </div>
+      ) : (
+        <p className="mt-3 text-xs text-faint">暂无摘要</p>
       )}
     </div>
   )
@@ -57,10 +59,15 @@ function PapersPage(): React.JSX.Element {
   const [journals, setJournals] = useState<JournalMeta[]>([])
   const [journalId, setJournalId] = useState('')
   const [query, setQuery] = useState('')
+  const [abstractFilter, setAbstractFilter] = useState<AbstractFilter>('all')
+  const [error, setError] = useState<string | null>(null)
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [papers, setPapers] = useState<Paper[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [hasMore, setHasMore] = useState(false)
+  const [pageIndex, setPageIndex] = useState(0)
+  const requestedPage = useRef(0)
+  const pageRef = useRef<HTMLDivElement>(null)
   // 请求序号：快速切换筛选时丢弃晚到的过期响应，避免旧结果覆盖新结果
   const requestSeq = useRef(0)
 
@@ -74,39 +81,54 @@ function PapersPage(): React.JSX.Element {
   }, [query])
 
   const load = useCallback(
-    async (offset: number, append: boolean): Promise<void> => {
+    async (targetPage: number): Promise<void> => {
       const seq = ++requestSeq.current
+      requestedPage.current = targetPage
       setLoading(true)
+      setError(null)
+      // 保留已展示的列表和分页布局，等最新请求成功后一次替换，避免清空引起闪烁。
       try {
         const list = await window.tjm.listPapers({
           journalId: journalId || undefined,
+          abstractFilter,
           query: debouncedQuery.trim() || undefined,
-          limit: PAGE_SIZE,
-          offset
+          // 多读一条判断是否有下一页，避免整页刚好 10 篇时出现空白尾页。
+          limit: PAGE_SIZE + 1,
+          offset: targetPage * PAGE_SIZE
         })
         if (seq !== requestSeq.current) return
-        setPapers((prev) => (append ? [...prev, ...list] : list))
-        setHasMore(list.length === PAGE_SIZE)
+        // 只保留当前页，翻页不会累计论文对象或 DOM 节点。
+        setPapers(list.slice(0, PAGE_SIZE))
+        setHasMore(list.length > PAGE_SIZE)
+        setPageIndex(targetPage)
+        pageRef.current?.closest('main')?.scrollTo({ top: 0, behavior: 'instant' })
+      } catch (e) {
+        if (seq === requestSeq.current) setError(e instanceof Error ? e.message : String(e))
       } finally {
         if (seq === requestSeq.current) setLoading(false)
       }
     },
-    [journalId, debouncedQuery]
+    [journalId, debouncedQuery, abstractFilter]
   )
 
   useEffect(() => {
-    load(0, false)
+    const requests = requestSeq
+    void load(0)
+    return () => {
+      requests.current++
+    }
   }, [load])
 
   return (
-    <div className="space-y-4">
+    <div ref={pageRef} className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <h2 className="text-xl font-bold text-heading">论文库</h2>
         <div className="flex-1" />
         <select
+          aria-label="按期刊筛选"
           value={journalId}
           onChange={(e) => setJournalId(e.target.value)}
-          className="rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary"
+          className="min-w-0 max-w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary sm:max-w-80"
         >
           <option value="">全部期刊</option>
           {journals.map((j) => (
@@ -115,6 +137,28 @@ function PapersPage(): React.JSX.Element {
             </option>
           ))}
         </select>
+        <div
+          role="group"
+          aria-label="摘要筛选"
+          className="inline-flex shrink-0 rounded-lg border border-border-strong bg-surface p-1"
+        >
+          {(
+            [
+              ['all', '全部'],
+              ['with', '有摘要'],
+              ['without', '没摘要']
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              aria-pressed={abstractFilter === value}
+              onClick={() => setAbstractFilter(value)}
+              className={`rounded-md px-3 py-1 text-sm font-medium ${abstractFilter === value ? 'bg-primary-soft text-primary-strong' : 'text-muted hover:bg-subtle'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-faint" />
           <input
@@ -126,26 +170,55 @@ function PapersPage(): React.JSX.Element {
         </div>
       </div>
 
-      <div className="space-y-3">
+      {error && (
+        <p role="alert" className="text-sm text-danger-text">
+          加载失败：{error}
+          {papers.length > 0 && '（仍显示上次加载的结果）'}
+          <button
+            onClick={() => load(requestedPage.current)}
+            className="ml-2 text-primary hover:underline"
+          >
+            重试
+          </button>
+        </p>
+      )}
+      <div aria-busy={loading} aria-label="论文列表" className="space-y-3">
         {papers.map((p) => (
           <PaperCard key={p.id} paper={p} />
         ))}
-        {papers.length === 0 && !loading && (
-          <p className="py-10 text-center text-sm text-faint">暂无论文，请先在仪表盘抓取期刊</p>
+        {papers.length === 0 && !loading && !error && (
+          <p className="py-10 text-center text-sm text-faint">
+            {journalId || debouncedQuery.trim() || abstractFilter !== 'all'
+              ? '没有符合筛选条件的论文，试试调整筛选或搜索关键词'
+              : '暂无论文，请先在仪表盘抓取期刊'}
+          </p>
         )}
       </div>
 
-      {loading && <p className="py-4 text-center text-sm text-faint">加载中…</p>}
-      {hasMore && !loading && (
-        <div className="text-center">
-          <button
-            onClick={() => load(papers.length, true)}
-            className="rounded-lg border border-border-strong bg-surface px-5 py-2 text-sm font-medium text-body hover:bg-subtle"
-          >
-            加载更多
-          </button>
-        </div>
+      {loading && papers.length === 0 && (
+        <p role="status" className="py-4 text-center text-sm text-faint">
+          加载中…
+        </p>
       )}
+      <nav aria-label="论文分页" className="flex flex-wrap items-center justify-center gap-4">
+        <button
+          onClick={() => load(pageIndex - 1)}
+          disabled={pageIndex === 0 || loading || !!error || query !== debouncedQuery}
+          className="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-body hover:bg-subtle disabled:cursor-not-allowed disabled:text-faint"
+        >
+          上一页
+        </button>
+        <span className="text-sm text-muted">
+          第 {pageIndex + 1} 页 · 每页 {PAGE_SIZE} 篇
+        </span>
+        <button
+          onClick={() => load(pageIndex + 1)}
+          disabled={!hasMore || loading || !!error || query !== debouncedQuery}
+          className="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-body hover:bg-subtle disabled:cursor-not-allowed disabled:text-faint"
+        >
+          下一页
+        </button>
+      </nav>
     </div>
   )
 }
