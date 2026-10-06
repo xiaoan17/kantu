@@ -2,27 +2,36 @@
 
 **论文选刊助手** — 为每一篇研究，找到合适的期刊。
 
+[![release](https://img.shields.io/github/v/release/xiaoan17/kantu?style=for-the-badge&label=release&color=2563eb)](https://github.com/xiaoan17/kantu/releases/latest)
+[![下载 macOS 安装包](https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-macOS%20%E5%AE%89%E8%A3%85%E5%8C%85-2563eb?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/xiaoan17/kantu/releases/latest)
+[![平台 macOS arm64](https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-macOS%20arm64-64748b?style=for-the-badge)](https://github.com/xiaoan17/kantu/releases/latest)
+[![完全本地离线](https://img.shields.io/badge/%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F-%E5%AE%8C%E5%85%A8%E6%9C%AC%E5%9C%B0%E7%A6%BB%E7%BA%BF-059669?style=for-the-badge)](#功能)
+
+### ⬇️ [下载 macOS 安装包](https://github.com/xiaoan17/kantu/releases/latest) ｜ [导入成品论文库](https://github.com/xiaoan17/kantu/releases/tag/data-v2)（免抓取）
+
 ![刊途 · Kantu](docs/assets/og-image.png)
 
 交通运输领域的**投稿期刊匹配桌面工具**：输入论文标题和摘要，基于本地语料库的语义相似度，
 推荐最适合投稿的期刊，并给出每本期刊的证据论文。**完全本地运行**，抓取之后向量化与推荐
 全在离线完成，不依赖任何远程 Embedding 服务。
 
-文档：[命名与兼容性约定](docs/naming.md) · [摘要回填手册](docs/abstract-backfill.md) ·
-[语料卫生](docs/corpus-hygiene.md) · [构建与发布](docs/build-and-release.md)
-
 ## 下载
 
-从 [Releases](https://github.com/xiaoan17/kantu/releases) 下载：macOS (arm64) 安装包
-`kantu-<version>.dmg`，以及可选的论文数据库快照 `tjm.db`（`data-vN` Release）。
+| 要做什么                   | 下载                                                                                                    | 说明                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| **装应用**（必需）         | [kantu-1.0.0.dmg](https://github.com/xiaoan17/kantu/releases/latest)                                    | macOS (Apple Silicon)，拖进「应用程序」    |
+| 免拖拽安装                 | [kantu-1.0.0-arm64-mac.zip](https://github.com/xiaoan17/kantu/releases/latest)                          | zip 版，解压即用                           |
+| **跳过数小时抓取**（可选） | [data-v2 的 tjm.db](https://github.com/xiaoan17/kantu/releases/tag/data-v2)                             | 26,907 篇论文 + 完整向量，放到下面路径即可 |
+| 看 8 秒产品氛围短片        | [kantu-intro-h264.mp4](https://github.com/xiaoan17/kantu/releases/download/v1.0.0/kantu-intro-h264.mp4) | 1080p                                      |
 
-> macOS 安装包为 **ad-hoc 签名、未公证**，首次打开请右键「打开」，或到
-> 「系统设置 → 隐私与安全性」放行。从 dmg 拖入「应用程序」即可。
+> ⚠️ **首次打开请右键 → 打开。** 安装包是 ad-hoc 签名、未经 Apple 公证，直接双击会被
+> Gatekeeper 拦下；也可以到「系统设置 → 隐私与安全性」点「仍要打开」，之后正常双击。
 
-想跳过数小时的抓取，可下载 `data-vN` 里的 `tjm.db` 放到
-`~/Library/Application Support/transport-journal-match/tjm.db`，启动即有完整语料。
+数据库快照放到 `~/Library/Application Support/transport-journal-match/tjm.db`
+（Windows `%APPDATA%`、Linux `~/.config` 下的同路径）。`settings.json` 不含在内，
+里面是 API key，请在新设备重新配置。
 
-▶ [8 秒产品氛围短片](https://github.com/xiaoan17/kantu/releases/download/v1.0.0/kantu-intro-h264.mp4)（1080p，Seedance 生成）
+只提供 **Apple Silicon (arm64)** 版本，Intel Mac / Windows / Linux 请见下方自行构建。
 
 ## 功能
 
@@ -39,18 +48,19 @@
 - **可选远程 API**：设置页可切换为任意 OpenAI 兼容的 Embedding 服务（OpenAI / Kimi / DashScope 等）
 - **多套主题**：浅色、暗夜、海洋蓝、森林绿、暖阳橙
 
-## 快速开始
+## 首次使用
+
+装应用 → 打开 → 仪表盘点「**开始抓取全部期刊**」（可只选几本试）→「**运行向量化**」→
+去「推荐」页输入标题与摘要。
+
+若已导入 `tjm.db` 快照，可跳过抓取直接点名向量化，几秒内即可开始推荐。
+
+## 从源码运行 / 构建
 
 ```bash
 npm install
-npm run dev          # 开发窗口，热更新
-```
+npm run dev                # 开发窗口，热更新
 
-首次使用：仪表盘 →「开始抓取全部期刊」（可只选几本试）→「运行向量化」→ 去「推荐」页输入标题与摘要。
-
-生成可双击启动的本地应用与分发安装包（dmg + zip）：
-
-```bash
 npm run build:local        # dist/mac-arm64/刊途.app，ad-hoc 签名，不出 dmg
 npm run build:mac:adhoc    # dist/kantu-1.0.0.dmg + zip ← 分发用这个
 ```
@@ -71,17 +81,26 @@ macOS 分配器崩溃（[microsoft/onnxruntime#29763](https://github.com/microso
 
 论文元数据来自 [OpenAlex](https://openalex.org/)（CC0）。在设置页填写邮箱可进入 OpenAlex 礼貌池，抓取更稳定。
 
-## 运维
+## 文档
 
-抓取之后难免有脏数据，仓库里带了几支维护脚本，用法见对应文档：
+| 文档                                      | 内容                                       |
+| ----------------------------------------- | ------------------------------------------ |
+| [语料卫生](docs/corpus-hygiene.md)        | 非正文清理、撤稿标记、表结构迁移、快照分发 |
+| [摘要回填手册](docs/abstract-backfill.md) | 回填出版商没同步给 OpenAlex 的摘要         |
+| [构建与发布](docs/build-and-release.md)   | 签名与公证、Release 结构、发布校验清单     |
+| [命名与兼容性约定](docs/naming.md)        | 包名 / appId / userData 路径的历史与兼容   |
 
-| 脚本                                    | 作用                                    | 文档                                      |
-| --------------------------------------- | --------------------------------------- | ----------------------------------------- |
-| `npm run backfill-browser`              | 回填出版商没同步给 OpenAlex 的摘要      | [摘要回填手册](docs/abstract-backfill.md) |
-| `npm run prune-non-articles`            | 清理封面页 / 社论 / 更正 / 目录等非正文 | [语料卫生](docs/corpus-hygiene.md)        |
-| `npm run sync-retracted`                | 按 OpenAlex `is_retracted` 标记撤稿论文 | [语料卫生](docs/corpus-hygiene.md)        |
-| `npm run migrate-db -- "<tjm.db 路径>"` | 不启动 App 直接应用表结构迁移           | [语料卫生](docs/corpus-hygiene.md)        |
-| `python3 scripts/make-og-image.py`      | 用 Seedream 底图合成产品 OG 图          | 脚本内 `--help`                           |
+## 运维脚本
+
+抓取之后难免有脏数据，仓库里带了几支维护脚本：
+
+| 脚本                                    | 作用                                    |
+| --------------------------------------- | --------------------------------------- |
+| `npm run backfill-browser`              | 回填出版商没同步给 OpenAlex 的摘要      |
+| `npm run prune-non-articles`            | 清理封面页 / 社论 / 更正 / 目录等非正文 |
+| `npm run sync-retracted`                | 按 OpenAlex `is_retracted` 标记撤稿论文 |
+| `npm run migrate-db -- "<tjm.db 路径>"` | 不启动 App 直接应用表结构迁移           |
+| `python3 scripts/make-og-image.py`      | 用 Seedream 底图合成产品 OG 图          |
 
 所有维护脚本**默认 dry-run**，加 `--apply` 才写库；涉及删除的会先自动备份并校验行数。
 
