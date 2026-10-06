@@ -12,6 +12,8 @@ import type {
 
 const api: TjmApi = {
   listJournals: () => ipcRenderer.invoke(IPC.journalsList),
+  setJournalPreference: (id, preference) =>
+    ipcRenderer.invoke(IPC.journalPreferenceSet, id, preference),
   startFetch: (journalIds?: string[]) => ipcRenderer.invoke(IPC.fetchStart, journalIds),
   getFetchSummary: () => ipcRenderer.invoke(IPC.fetchSummary),
   listPapers: (q: PapersQuery) => ipcRenderer.invoke(IPC.papersList, q),

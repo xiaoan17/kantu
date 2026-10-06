@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Search, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, ExternalLink, AlertTriangle } from 'lucide-react'
 import type { AbstractFilter, JournalMeta, Paper } from '../../../shared/contract'
 
 const PAGE_SIZE = 10
@@ -15,7 +15,18 @@ function PaperCard({ paper }: { paper: Paper }): React.JSX.Element {
   return (
     <div className="rounded-xl bg-surface p-5 shadow-sm ring-1 ring-border">
       <div className="flex items-start justify-between gap-4">
-        <h3 className="font-semibold leading-snug text-heading">{paper.title}</h3>
+        <div className="min-w-0">
+          {paper.isRetracted && (
+            <span
+              title="OpenAlex 标记为已撤稿，已排除出推荐语料"
+              className="mb-1 inline-flex items-center gap-1 rounded-full border border-danger-border bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger-text"
+            >
+              <AlertTriangle size={12} />
+              已撤稿
+            </span>
+          )}
+          <h3 className="font-semibold leading-snug text-heading">{paper.title}</h3>
+        </div>
         {doiUrl && (
           <a
             href={doiUrl}

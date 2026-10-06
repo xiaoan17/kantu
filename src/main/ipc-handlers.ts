@@ -5,6 +5,7 @@ import { is } from '@electron-toolkit/utils'
 import { IPC, DEFAULT_SETTINGS } from '../shared/contract'
 import type {
   PapersQuery,
+  JournalPreference,
   RecommendInput,
   AppSettings,
   SettingsSnapshot,
@@ -16,6 +17,7 @@ import {
   initDatabase,
   seedJournals,
   listJournals,
+  setJournalPreference,
   listPapers,
   getFetchSummary,
   setFetchRunning,
@@ -59,6 +61,10 @@ let embedRunning = false
 
 export function registerIpcHandlers(): void {
   ipcMain.handle(IPC.journalsList, (): JournalMeta[] => listJournals())
+
+  ipcMain.handle(IPC.journalPreferenceSet, (_e, id: string, preference: JournalPreference) =>
+    setJournalPreference(id, preference)
+  )
 
   ipcMain.handle(IPC.fetchStart, (_e, journalIds?: string[]): void => {
     if (isFetchRunning()) return

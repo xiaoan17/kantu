@@ -1,6 +1,7 @@
 import { getEmbeddingsWithMeta, listJournals } from './db'
 import { embedTexts } from './embed'
 import { cosine, casZone } from './utils'
+import { JOURNAL_PREFERENCES } from '../shared/contract'
 import type {
   EvidencePaper,
   JournalMeta,
@@ -12,6 +13,7 @@ const TOP_N_FOR_SCORE = 10
 const TOP_N_EVIDENCE = 3
 
 function passesFilters(journal: JournalMeta, input: RecommendInput): boolean {
+  if (journal.preference === 'blocked') return false
   const filters = input.filters
   if (!filters) return true
   if (filters.jcrQuartiles && filters.jcrQuartiles.length > 0) {
@@ -72,8 +74,14 @@ export async function recommend(input: RecommendInput): Promise<JournalRecommend
       doi: it.row.doi,
       similarity: it.sim
     }))
-    results.push({ journal, score, evidence })
+    const rankingScore = score + JOURNAL_PREFERENCES[journal.preference].adjustment
+    results.push({ journal, score, rankingScore, evidence })
   }
-  results.sort((a, b) => b.score - a.score)
+  results.sort(
+    (a, b) =>
+      b.rankingScore - a.rankingScore ||
+      b.score - a.score ||
+      a.journal.id.localeCompare(b.journal.id)
+  )
   return results
 }

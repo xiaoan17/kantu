@@ -10,7 +10,9 @@ const STATUS_STYLE: Record<JournalMeta['fetchStatus'], { label: string; classNam
 function StatusBadge({ status }: { status: JournalMeta['fetchStatus'] }): React.JSX.Element {
   const s = STATUS_STYLE[status]
   return (
-    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${s.className}`}>
+    <span
+      className={`inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium leading-4 ${s.className}`}
+    >
       {s.label}
     </span>
   )

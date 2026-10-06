@@ -5,6 +5,14 @@
 
 // ---------- 数据模型 ----------
 
+export const JOURNAL_PREFERENCES = {
+  followed: { label: '重点关注', adjustment: 0.05 },
+  normal: { label: '正常', adjustment: 0 },
+  reduced: { label: '降低优先级', adjustment: -0.05 },
+  blocked: { label: '拉黑', adjustment: 0 }
+} as const
+
+export type JournalPreference = keyof typeof JOURNAL_PREFERENCES
 export type AbstractFilter = 'all' | 'with' | 'without'
 
 export interface JournalMeta {
@@ -19,6 +27,7 @@ export interface JournalMeta {
   fetchStatus: 'pending' | 'fetching' | 'done' | 'error'
   lastFetchedAt: string | null // ISO 时间
   paperCount: number
+  preference: JournalPreference
 }
 
 export interface Paper {
@@ -33,6 +42,7 @@ export interface Paper {
   authors: string // 逗号分隔
   citedByCount: number
   hasEmbedding: boolean
+  isRetracted: boolean // OpenAlex is_retracted：撤稿原文不进推荐语料，只在论文库打标
 }
 
 // ---------- 推荐 ----------
@@ -59,6 +69,7 @@ export interface EvidencePaper {
 export interface JournalRecommendation {
   journal: JournalMeta
   score: number // 期刊聚合得分（Top-10 相似度之和 / 10，语料不足 10 篇的期刊按缺失计 0，避免小样本占优）
+  rankingScore: number // 原始聚合得分 + 用户偏好调整，仅用于排序
   evidence: EvidencePaper[] // 每刊 Top-3
 }
 
@@ -129,6 +140,7 @@ export interface FetchSummary {
   totalPapers: number
   papersWithAbstract: number
   papersWithEmbedding: number
+  papersRetracted: number // 已标记撤稿、被排除出推荐语料的论文数
   running: boolean
 }
 
@@ -136,6 +148,7 @@ export interface FetchSummary {
 
 export const IPC = {
   journalsList: 'tjm:journals:list',
+  journalPreferenceSet: 'tjm:journals:preference:set',
   fetchStart: 'tjm:fetch:start', // (journalIds?: string[]) => void，不传则全部
   fetchSummary: 'tjm:fetch:summary', // () => FetchSummary
   papersList: 'tjm:papers:list', // (q: PapersQuery) => Paper[]
@@ -160,6 +173,7 @@ export interface PapersQuery {
 
 export interface TjmApi {
   listJournals(): Promise<JournalMeta[]>
+  setJournalPreference(id: string, preference: JournalPreference): Promise<void>
   startFetch(journalIds?: string[]): Promise<void>
   getFetchSummary(): Promise<FetchSummary>
   listPapers(q: PapersQuery): Promise<Paper[]>

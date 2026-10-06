@@ -2,57 +2,92 @@
 
 **论文选刊助手** — 为每一篇研究，找到合适的期刊。
 
-GitHub：[xiaoan17/kantu](https://github.com/xiaoan17/kantu) · [命名与兼容性约定](docs/naming.md)
+![刊途 · Kantu](docs/assets/og-image.png)
 
-交通运输领域的**投稿期刊匹配桌面工具**：输入论文标题和摘要，基于本地语料库的语义相似度，推荐最适合投稿的期刊，并给出每本期刊的证据论文。
+交通运输领域的**投稿期刊匹配桌面工具**：输入论文标题和摘要，基于本地语料库的语义相似度，
+推荐最适合投稿的期刊，并给出每本期刊的证据论文。**完全本地运行**，抓取之后向量化与推荐
+全在离线完成，不依赖任何远程 Embedding 服务。
 
-完全本地运行：语料抓取后，向量化与推荐均在本地离线完成，不依赖任何远程 Embedding 服务。
+[命名与兼容性约定](docs/naming.md) · [摘要回填手册](docs/abstract-backfill.md) · [语料卫生](docs/corpus-hygiene.md)
+
+## 下载
+
+从 [Releases](https://github.com/xiaoan17/kantu/releases) 下载：macOS (arm64) 安装包
+`kantu-<version>.dmg`，以及可选的论文数据库快照 `tjm.db`（`data-vN` Release）。
+
+> macOS 安装包为 **ad-hoc 签名、未公证**，首次打开请右键「打开」，或到
+> 「系统设置 → 隐私与安全性」放行。从 dmg 拖入「应用程序」即可。
+
+想跳过数小时的抓取，可下载 `data-vN` 里的 `tjm.db` 放到
+`~/Library/Application Support/transport-journal-match/tjm.db`，启动即有完整语料。
 
 ## 功能
 
-- **期刊语料库**：内置交通运输领域期刊清单（含 JCR 分区、中科院分区、影响因子），通过 OpenAlex API 抓取各刊论文（标题 / 摘要 / DOI / 被引数），存入本地 SQLite
-- **本地 Embedding**：内置量化版 BGE Small EN v1.5 模型（384 维，34MB，随安装包分发），基于 onnxruntime-web（纯 WASM）+ transformers.js 分词器，在独立 worker 线程中推理，界面不卡顿
+- **期刊语料库**：内置 72 本交通运输领域期刊（含 JCR 分区、中科院分区、影响因子），
+  通过 OpenAlex API 抓取论文的标题 / 摘要 / DOI / 被引数，存入本地 SQLite
 - **语义推荐**：对查询论文与语料库做余弦相似度检索，按期刊聚合 Top-K 证据给出推荐得分
+- **本地 Embedding**：内置量化版 BGE Small EN v1.5（384 维，34MB，随安装包分发），
+  基于 onnxruntime-web（纯 WASM）+ transformers.js 分词器，在独立 worker 线程推理，界面不卡顿
+- **期刊偏好**：可设重点关注 / 正常 / 降低优先级 / 拉黑。关注与降权给排序分加减 0.05
+  （百分制 5 分），原始匹配度和证据不变；拉黑不参与推荐，可随时恢复
+- **论文库**：期刊 / 摘要状态（全部 · 有摘要 · 没摘要）/ 关键词组合筛选与分页，
+  每页最多 10 篇；空值、空字符串和纯空白都视为没摘要
+- **撤稿标记**：按 OpenAlex `is_retracted` 打标，撤稿原文保留可见但**不进推荐语料**
 - **可选远程 API**：设置页可切换为任意 OpenAI 兼容的 Embedding 服务（OpenAI / Kimi / DashScope 等）
+- **多套主题**：浅色、暗夜、海洋蓝、森林绿、暖阳橙
 
-- **论文库分页**：每页最多 10 篇，按需翻页且不累积旧页；支持期刊、摘要状态和关键词组合筛选，更新结果时保留原列表以避免闪烁
-
-## 技术栈
-
-Electron + React 19 + TypeScript + Tailwind CSS 4 + better-sqlite3 + electron-vite
-
-本地推理方案说明：onnxruntime-node 的原生库在 Electron 运行时下会触发 macOS 分配器崩溃（[microsoft/onnxruntime#29763](https://github.com/microsoft/onnxruntime/issues/29763)），因此选择纯 WASM 的 onnxruntime-web，零原生依赖。
-
-## 开发
+## 快速开始
 
 ```bash
 npm install
-npm run dev
+npm run dev          # 开发窗口，热更新
 ```
 
-## 构建
-
-`npm run dev` 打开开发窗口，`npm run build` 只生成 `out/` 编译文件；两者都不会生成独立的 `.app`。
+首次使用：仪表盘 →「开始抓取全部期刊」（可只选几本试）→「运行向量化」→ 去「推荐」页输入标题与摘要。
 
 在 Mac 上生成可双击启动的本地应用：
 
 ```bash
 npm run build:local
-open dist/mac-arm64/刊途.app  # Apple Silicon；Intel Mac 的目录为 mac
+open dist/mac-arm64/刊途.app     # Apple Silicon；Intel Mac 目录为 mac
 ```
 
-`build:local` 使用 ad-hoc 签名，不会自动选择本机钥匙串中的证书，也不会生成 DMG 或安装到 `/Applications`。需要安装时，可把生成的 `.app` 拖入“应用程序”目录。
+分发安装包：`npm run build:mac`（dmg + zip）、`build:win`、`build:linux`。
 
-生成分发安装包：
+## 技术栈
 
-```bash
-npm run build:mac    # macOS (dmg + zip)
-npm run build:win    # Windows
-npm run build:linux  # Linux
-```
+Electron + React 19 + TypeScript + Tailwind CSS 4 + better-sqlite3 + electron-vite。
 
-模型文件已提交在 `resources/models/`（34MB），构建时自动打入安装包，无需额外下载。
+本地推理用纯 WASM 的 onnxruntime-web：onnxruntime-node 的原生库在 Electron 运行时下会触发
+macOS 分配器崩溃（[microsoft/onnxruntime#29763](https://github.com/microsoft/onnxruntime/issues/29763)），
+故选 WASM，零原生依赖。
 
 ## 数据来源
 
 论文元数据来自 [OpenAlex](https://openalex.org/)（CC0）。在设置页填写邮箱可进入 OpenAlex 礼貌池，抓取更稳定。
+
+## 运维
+
+抓取之后难免有脏数据，仓库里带了几支维护脚本，用法见对应文档：
+
+| 脚本                                    | 作用                                    | 文档                                      |
+| --------------------------------------- | --------------------------------------- | ----------------------------------------- |
+| `npm run backfill-browser`              | 回填出版商没同步给 OpenAlex 的摘要      | [摘要回填手册](docs/abstract-backfill.md) |
+| `npm run prune-non-articles`            | 清理封面页 / 社论 / 更正 / 目录等非正文 | [语料卫生](docs/corpus-hygiene.md)        |
+| `npm run sync-retracted`                | 按 OpenAlex `is_retracted` 标记撤稿论文 | [语料卫生](docs/corpus-hygiene.md)        |
+| `npm run migrate-db -- "<tjm.db 路径>"` | 不启动 App 直接应用表结构迁移           | [语料卫生](docs/corpus-hygiene.md)        |
+| `python3 scripts/make-og-image.py`      | 用 Seedream 底图合成产品 OG 图          | 脚本内 `--help`                           |
+
+所有维护脚本**默认 dry-run**，加 `--apply` 才写库；涉及删除的会先自动备份并校验行数。
+
+## 开发校验
+
+```bash
+npm test         # vitest
+npm run typecheck
+npm run lint
+```
+
+## 许可
+
+论文元数据来自 OpenAlex（CC0）；本仓库代码未声明开源许可证，如需使用请联系作者。

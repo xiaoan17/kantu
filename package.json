@@ -21,7 +21,13 @@
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
-    "backfill-abstracts": "node scripts/backfill-abstracts.mjs"
+    "backfill-abstracts": "node scripts/backfill-abstracts.mjs",
+    "backfill-browser": "node scripts/browser-backfill.mjs plan && node scripts/browser-backfill.mjs run",
+    "backfill-browser:plan": "node scripts/browser-backfill.mjs plan",
+    "backfill-browser:apply": "node scripts/browser-backfill.mjs apply",
+    "prune-non-articles": "node scripts/prune-non-articles.mjs",
+    "sync-retracted": "node scripts/sync-retracted.mjs",
+    "migrate-db": "esbuild scripts/migrate-db.ts --bundle --platform=node --packages=external --outfile=node_modules/.tjm-migrate.cjs --log-level=warning && node node_modules/.tjm-migrate.cjs"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",

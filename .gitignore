@@ -5,3 +5,9 @@ out
 .eslintcache
 *.log*
 *.tsbuildinfo
+
+# 回填状态与密钥（绝不入库）
+scripts/.browser-backfill/
+scripts/.prune/
+.env
+.env.local

@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3'
 import type { FetchSummary, JournalMeta, Paper, PapersQuery } from '../shared/contract'
+import { JOURNAL_PREFERENCES, type JournalPreference } from '../shared/contract'
 import { escapeLike } from './utils'
 
 export interface JournalSeedEntry {
@@ -21,6 +22,7 @@ export interface NewPaper {
   authors: string
   publicationDate: string | null
   citedByCount: number
+  isRetracted?: boolean // 缺省视为未撤稿，兼容历史调用方
 }
 
 interface JournalRow {
@@ -34,6 +36,7 @@ interface JournalRow {
   cas_minor: string | null
   fetch_status: JournalMeta['fetchStatus']
   last_fetched_at: string | null
+  preference: JournalPreference
   paper_count: number
 }
 
@@ -49,6 +52,7 @@ interface PaperRow {
   authors: string
   cited_by_count: number
   has_embedding: number
+  is_retracted: number
 }
 
 let db: Database.Database | null = null
@@ -71,6 +75,7 @@ function toJournalMeta(row: JournalRow): JournalMeta {
     casMinor: row.cas_minor,
     fetchStatus: row.fetch_status,
     lastFetchedAt: row.last_fetched_at,
+    preference: row.preference,
     paperCount: row.paper_count
   }
 }
@@ -87,7 +92,8 @@ function toPaper(row: PaperRow): Paper {
     doi: row.doi,
     authors: row.authors,
     citedByCount: row.cited_by_count,
-    hasEmbedding: row.has_embedding === 1
+    hasEmbedding: row.has_embedding === 1,
+    isRetracted: row.is_retracted === 1
   }
 }
 
@@ -130,13 +136,39 @@ export function initDatabase(dbPath: string): void {
       doi TEXT,
       authors TEXT NOT NULL DEFAULT '',
       cited_by_count INTEGER NOT NULL DEFAULT 0,
-      embedding BLOB
+      embedding BLOB,
+      is_retracted INTEGER NOT NULL DEFAULT 0
     );
 
     CREATE INDEX IF NOT EXISTS idx_papers_journal ON papers (journal_id);
     CREATE INDEX IF NOT EXISTS idx_papers_missing_embedding
       ON papers (journal_id) WHERE embedding IS NULL;
   `)
+  const columns = db.prepare('PRAGMA table_info(journals)').all() as { name: string }[]
+  if (!columns.some((column) => column.name === 'preference')) {
+    db.exec(
+      "ALTER TABLE journals ADD COLUMN preference TEXT NOT NULL DEFAULT 'normal' CHECK (preference IN ('followed', 'normal', 'reduced', 'blocked'))"
+    )
+  }
+  const paperColumns = db.prepare('PRAGMA table_info(papers)').all() as { name: string }[]
+  if (!paperColumns.some((column) => column.name === 'is_retracted')) {
+    db.exec('ALTER TABLE papers ADD COLUMN is_retracted INTEGER NOT NULL DEFAULT 0')
+  }
+  // 索引必须在补列之后建：老库的 papers 表没有 is_retracted 列，
+  // 放在上面的 CREATE TABLE 块里会直接报 no such column。
+  db.exec(
+    'CREATE INDEX IF NOT EXISTS idx_papers_retracted ON papers (is_retracted) WHERE is_retracted = 1'
+  )
+}
+
+export function setJournalPreference(id: string, preference: JournalPreference): void {
+  if (!Object.prototype.hasOwnProperty.call(JOURNAL_PREFERENCES, preference)) {
+    throw new Error('无效的期刊偏好')
+  }
+  const result = getDb()
+    .prepare('UPDATE journals SET preference = ? WHERE id = ?')
+    .run(preference, id)
+  if (result.changes === 0) throw new Error('期刊不存在')
 }
 
 export function seedJournals(seed: JournalSeedEntry[]): void {
@@ -245,7 +277,7 @@ export function listPapers(q: PapersQuery): Paper[] {
   const offset = q.offset ?? 0
   const sql = `
     SELECT id, journal_id, volume, issue, publication_date, title, abstract, doi, authors,
-           cited_by_count, embedding IS NOT NULL AS has_embedding
+           cited_by_count, embedding IS NOT NULL AS has_embedding, is_retracted
     FROM papers
     ${where.length > 0 ? `WHERE ${where.join(' AND ')}` : ''}
     ORDER BY publication_date DESC, id ASC
@@ -264,8 +296,8 @@ export function upsertIssuePapers(
 ): void {
   const database = getDb()
   const upsertPaper = database.prepare(`
-    INSERT INTO papers (id, journal_id, volume, issue, publication_date, title, abstract, doi, authors, cited_by_count)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO papers (id, journal_id, volume, issue, publication_date, title, abstract, doi, authors, cited_by_count, is_retracted)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       journal_id = excluded.journal_id,
       volume = excluded.volume,
@@ -275,7 +307,9 @@ export function upsertIssuePapers(
       abstract = COALESCE(excluded.abstract, papers.abstract),
       doi = excluded.doi,
       authors = excluded.authors,
-      cited_by_count = excluded.cited_by_count
+      cited_by_count = excluded.cited_by_count,
+      -- 撤稿是单向事实：OpenAlex 偶发返回 false 时不能把已标记的撤稿状态抹掉
+      is_retracted = MAX(excluded.is_retracted, papers.is_retracted)
   `)
   database.transaction((items: NewPaper[]): void => {
     for (const p of items) {
@@ -289,7 +323,8 @@ export function upsertIssuePapers(
         p.abstract,
         p.doi,
         p.authors,
-        p.citedByCount
+        p.citedByCount,
+        p.isRetracted ? 1 : 0
       )
     }
   })(papers)
@@ -307,16 +342,18 @@ export function getFetchSummary(): FetchSummary {
     .prepare(
       `SELECT COUNT(*) AS total,
               COALESCE(SUM(CASE WHEN has_abstract(abstract) = 1 THEN 1 ELSE 0 END), 0) AS with_abstract,
-              COALESCE(SUM(CASE WHEN embedding IS NOT NULL THEN 1 ELSE 0 END), 0) AS with_embedding
+              COALESCE(SUM(CASE WHEN embedding IS NOT NULL THEN 1 ELSE 0 END), 0) AS with_embedding,
+              COALESCE(SUM(CASE WHEN is_retracted = 1 THEN 1 ELSE 0 END), 0) AS retracted
        FROM papers`
     )
-    .get() as { total: number; with_abstract: number; with_embedding: number }
+    .get() as { total: number; with_abstract: number; with_embedding: number; retracted: number }
   return {
     totalJournals: j.total,
     doneJournals: j.done,
     totalPapers: p.total,
     papersWithAbstract: p.with_abstract,
     papersWithEmbedding: p.with_embedding,
+    papersRetracted: p.retracted,
     running: fetchRunning
   }
 }
@@ -335,7 +372,7 @@ export function getPapersMissingEmbeddings(
   return getDb()
     .prepare(
       `SELECT id, title, abstract FROM papers
-       WHERE embedding IS NULL AND has_abstract(abstract) = 1
+       WHERE embedding IS NULL AND has_abstract(abstract) = 1 AND is_retracted = 0
        ORDER BY publication_date DESC
        LIMIT ?`
     )
@@ -367,7 +404,7 @@ export function getEmbeddingsWithMeta(): {
   const rows = getDb()
     .prepare(
       `SELECT id, journal_id, title, publication_date, doi, embedding FROM papers
-       WHERE embedding IS NOT NULL AND has_abstract(abstract) = 1`
+       WHERE embedding IS NOT NULL AND has_abstract(abstract) = 1 AND is_retracted = 0`
     )
     .all() as {
     id: string

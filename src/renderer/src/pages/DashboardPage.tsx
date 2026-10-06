@@ -76,12 +76,13 @@ function DashboardPage(): React.JSX.Element {
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-heading">仪表盘</h2>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
         <StatCard label="期刊总数" value={summary?.totalJournals ?? 0} />
         <StatCard label="已抓取期刊" value={summary?.doneJournals ?? 0} />
         <StatCard label="论文总数" value={summary?.totalPapers ?? 0} />
         <StatCard label="有摘要论文" value={summary?.papersWithAbstract ?? 0} />
         <StatCard label="已向量化论文" value={summary?.papersWithEmbedding ?? 0} />
+        <StatCard label="已撤稿论文" value={summary?.papersRetracted ?? 0} />
       </div>
 
       <div className="flex gap-3">

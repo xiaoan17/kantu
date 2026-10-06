@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { ExternalLink, AlertTriangle } from 'lucide-react'
-import type { JournalMeta, JournalRecommendation } from '../../../shared/contract'
+import {
+  JOURNAL_PREFERENCES,
+  type JournalMeta,
+  type JournalRecommendation
+} from '../../../shared/contract'
 import Spinner from '../components/Spinner'
 
 function RecommendPage(): React.JSX.Element {
@@ -154,6 +158,12 @@ function RecommendPage(): React.JSX.Element {
                 <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
                   匹配度 {(rec.score * 100).toFixed(1)}%
                 </span>
+                {rec.journal.preference !== 'normal' && (
+                  <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs text-primary-strong">
+                    {JOURNAL_PREFERENCES[rec.journal.preference].label} · 排序{' '}
+                    {rec.journal.preference === 'followed' ? '+5' : '−5'} 分
+                  </span>
+                )}
                 <div className="flex-1" />
                 {rec.journal.impactFactor !== null && (
                   <span className="rounded-full bg-subtle px-2.5 py-0.5 text-xs text-body">

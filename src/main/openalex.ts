@@ -21,6 +21,7 @@ interface RawWork {
   abstract_inverted_index?: Record<string, number[]> | null
   authorships?: { author?: { display_name?: string | null } | null }[] | null
   cited_by_count?: number | null
+  is_retracted?: boolean | null
 }
 
 const API_BASE = 'https://api.openalex.org/works'
@@ -95,8 +96,26 @@ function toNewPaper(work: RawWork): NewPaper {
       .filter(Boolean)
       .join(', '),
     publicationDate: work.publication_date ?? null,
-    citedByCount: work.cited_by_count ?? 0
+    citedByCount: work.cited_by_count ?? 0,
+    isRetracted: work.is_retracted === true
   }
+}
+
+/**
+ * 判断 OpenAlex 返回的作品是否其实不是「正文」。
+ *
+ * 抓取请求已经带了 `type:article|review`，但出版商常把杂志前置物/后置物也标成
+ * journal-article，于是 OpenAlex 跟着标成 article，过滤不掉。这里补两条：
+ *   R2 作者与摘要双空 —— IEEE 杂志的 IEEE App / Why Join? / 年度 Index 等填充页
+ *   R3 标题含【JST —— 日本 JST 机翻记录，只是他国论文的翻译壳
+ * 注意：只有「作者也缺」时才判为非正文；新发表论文暂时没摘要（Elsevier 常见）
+ * 是有作者的真论文，必须留着等后续回填。
+ */
+export function isNonArticle(work: RawWork): boolean {
+  const title = work.display_name ?? work.title ?? ''
+  if (title.includes('【JST')) return true
+  const hasAuthors = (work.authorships ?? []).some((a) => a.author?.display_name)
+  return !hasAuthors && !work.abstract_inverted_index
 }
 
 export async function fetchRecentIssues(
@@ -135,6 +154,8 @@ export async function fetchRecentIssues(
     let pageAdded = false
     for (const work of results) {
       if (!work.display_name && !work.title) continue
+      // type 过滤挡不住的杂志前置物 / JST 机翻记录，在这里丢掉
+      if (isNonArticle(work)) continue
       const volume = work.biblio?.volume || null
       const issue = work.biblio?.issue || null
       const key =
