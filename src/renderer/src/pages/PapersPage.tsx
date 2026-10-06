@@ -13,22 +13,22 @@ function PaperCard({ paper }: { paper: Paper }): React.JSX.Element {
     : null
 
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+    <div className="rounded-xl bg-surface p-5 shadow-sm ring-1 ring-border">
       <div className="flex items-start justify-between gap-4">
-        <h3 className="font-semibold leading-snug text-slate-800">{paper.title}</h3>
+        <h3 className="font-semibold leading-snug text-heading">{paper.title}</h3>
         {doiUrl && (
           <a
             href={doiUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex shrink-0 items-center gap-1 text-xs text-blue-600 hover:underline"
+            className="flex shrink-0 items-center gap-1 text-xs text-primary hover:underline"
           >
             DOI <ExternalLink size={12} />
           </a>
         )}
       </div>
-      <p className="mt-1 line-clamp-1 text-sm text-slate-500">{paper.authors}</p>
-      <p className="mt-1 text-xs text-slate-400">
+      <p className="mt-1 line-clamp-1 text-sm text-muted">{paper.authors}</p>
+      <p className="mt-1 text-xs text-faint">
         {paper.publicationDate ?? '日期未知'}
         {(paper.volume || paper.issue) &&
           ` · Vol. ${paper.volume ?? '—'}${paper.issue ? `, Issue ${paper.issue}` : ''}`}
@@ -37,13 +37,13 @@ function PaperCard({ paper }: { paper: Paper }): React.JSX.Element {
         <div className="mt-3">
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+            className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
           >
             {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             {expanded ? '收起摘要' : '展开摘要'}
           </button>
           {expanded && (
-            <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-600">
+            <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-body">
               {paper.abstract}
             </p>
           )}
@@ -101,12 +101,12 @@ function PapersPage(): React.JSX.Element {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="text-xl font-bold text-slate-800">论文库</h2>
+        <h2 className="text-xl font-bold text-heading">论文库</h2>
         <div className="flex-1" />
         <select
           value={journalId}
           onChange={(e) => setJournalId(e.target.value)}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
+          className="rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary"
         >
           <option value="">全部期刊</option>
           {journals.map((j) => (
@@ -116,12 +116,12 @@ function PapersPage(): React.JSX.Element {
           ))}
         </select>
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-faint" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="搜索标题 / 摘要…"
-            className="w-64 rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-64 rounded-lg border border-border-strong bg-surface py-2 pl-9 pr-3 text-sm text-body outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft"
           />
         </div>
       </div>
@@ -131,16 +131,16 @@ function PapersPage(): React.JSX.Element {
           <PaperCard key={p.id} paper={p} />
         ))}
         {papers.length === 0 && !loading && (
-          <p className="py-10 text-center text-sm text-slate-400">暂无论文，请先在仪表盘抓取期刊</p>
+          <p className="py-10 text-center text-sm text-faint">暂无论文，请先在仪表盘抓取期刊</p>
         )}
       </div>
 
-      {loading && <p className="py-4 text-center text-sm text-slate-400">加载中…</p>}
+      {loading && <p className="py-4 text-center text-sm text-faint">加载中…</p>}
       {hasMore && !loading && (
         <div className="text-center">
           <button
             onClick={() => load(papers.length, true)}
-            className="rounded-lg border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="rounded-lg border border-border-strong bg-surface px-5 py-2 text-sm font-medium text-body hover:bg-subtle"
           >
             加载更多
           </button>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import type { AppSettings, EmbeddingProvider } from '../../../shared/contract'
 import { DEFAULT_SETTINGS, LOCAL_EMBEDDING_MODELS } from '../../../shared/contract'
+import { THEMES, applyTheme } from '../themes'
 
 function Field({
   label,
@@ -18,13 +19,13 @@ function Field({
 }): React.JSX.Element {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-body">{label}</label>
       <input
         type={type}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        className="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft"
       />
     </div>
   )
@@ -59,18 +60,52 @@ function SettingsPage(): React.JSX.Element {
     }
   }
 
-  const update = (key: keyof AppSettings) => (v: string): void => {
-    setForm((prev) => ({ ...prev, [key]: v }))
+  const update =
+    (key: keyof AppSettings) =>
+    (v: string): void => {
+      setForm((prev) => ({ ...prev, [key]: v }))
+      setSaved(false)
+    }
+
+  const selectTheme = (id: string): void => {
+    setForm((prev) => ({ ...prev, theme: id }))
+    applyTheme(id)
     setSaved(false)
   }
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-bold text-slate-800">设置</h2>
+      <h2 className="text-xl font-bold text-heading">设置</h2>
 
-      <div className="max-w-xl space-y-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <div className="max-w-xl rounded-xl bg-surface p-6 shadow-sm ring-1 ring-border">
+        <label className="mb-3 block text-sm font-medium text-body">主题配色</label>
+        <div className="grid grid-cols-5 gap-2">
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => selectTheme(t.id)}
+              className={`space-y-1.5 rounded-lg border p-2 text-center text-xs font-medium transition-colors ${
+                form.theme === t.id
+                  ? 'border-primary text-primary-strong ring-2 ring-primary-soft'
+                  : 'border-border text-body hover:border-border-strong'
+              }`}
+            >
+              <span className="flex h-8 overflow-hidden rounded-md ring-1 ring-border">
+                <span style={{ background: t.sidebar, width: '30%' }} />
+                <span style={{ background: t.base, width: '40%' }} />
+                <span style={{ background: t.primary, width: '30%' }} />
+              </span>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-muted">选择后立即预览，点击「保存」后长期生效。</p>
+      </div>
+
+      <div className="max-w-xl space-y-4 rounded-xl bg-surface p-6 shadow-sm ring-1 ring-border">
         <div>
-          <label className="mb-2 block text-sm font-medium text-slate-700">Embedding 来源</label>
+          <label className="mb-2 block text-sm font-medium text-body">Embedding 来源</label>
           <div className="flex gap-2">
             {(
               [
@@ -87,8 +122,8 @@ function SettingsPage(): React.JSX.Element {
                 }}
                 className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                   form.embeddingProvider === opt.id
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400'
+                    ? 'border-primary bg-primary-soft text-primary-strong'
+                    : 'border-border-strong bg-surface text-body hover:border-faint'
                 }`}
               >
                 {opt.label}
@@ -99,14 +134,14 @@ function SettingsPage(): React.JSX.Element {
 
         {form.embeddingProvider === 'local' ? (
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">本地模型</label>
+            <label className="mb-1 block text-sm font-medium text-body">本地模型</label>
             <select
               value={form.localEmbeddingModel}
               onChange={(e) => {
                 setForm((prev) => ({ ...prev, localEmbeddingModel: e.target.value }))
                 setSaved(false)
               }}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft"
             >
               {LOCAL_EMBEDDING_MODELS.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -114,7 +149,7 @@ function SettingsPage(): React.JSX.Element {
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-muted">
               模型已内置在安装包中，向量化和推荐全程离线运行，无需任何 API Key。
             </p>
           </div>
@@ -152,7 +187,7 @@ function SettingsPage(): React.JSX.Element {
           <button
             onClick={save}
             disabled={saving}
-            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             保存
           </button>
@@ -165,7 +200,7 @@ function SettingsPage(): React.JSX.Element {
         </div>
       </div>
 
-      <div className="max-w-xl rounded-xl bg-blue-50 p-4 text-sm leading-relaxed text-blue-800 ring-1 ring-blue-100">
+      <div className="max-w-xl rounded-xl bg-primary-soft p-4 text-sm leading-relaxed text-primary-strong ring-1 ring-primary-soft">
         <p className="font-semibold">说明</p>
         <ul className="mt-1 list-disc space-y-1 pl-5">
           <li>默认使用内置本地模型（BGE Small EN），向量化与推荐全程离线，不产生任何远程请求。</li>

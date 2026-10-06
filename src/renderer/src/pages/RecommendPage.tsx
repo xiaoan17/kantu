@@ -24,9 +24,7 @@ function RecommendPage(): React.JSX.Element {
   }, [])
 
   const toggleQuartile = (q: string): void => {
-    setSelectedQuartiles((prev) =>
-      prev.includes(q) ? prev.filter((x) => x !== q) : [...prev, q]
-    )
+    setSelectedQuartiles((prev) => (prev.includes(q) ? prev.filter((x) => x !== q) : [...prev, q]))
   }
 
   const run = async (): Promise<void> => {
@@ -54,41 +52,41 @@ function RecommendPage(): React.JSX.Element {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-bold text-slate-800">选刊推荐</h2>
+      <h2 className="text-xl font-bold text-heading">选刊推荐</h2>
 
-      <div className="space-y-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <div className="space-y-4 rounded-xl bg-surface p-5 shadow-sm ring-1 ring-border">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">论文题目</label>
+          <label className="mb-1 block text-sm font-medium text-body">论文题目</label>
           <textarea
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             rows={2}
             placeholder="输入论文题目…"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">论文摘要</label>
+          <label className="mb-1 block text-sm font-medium text-body">论文摘要</label>
           <textarea
             value={abstract}
             onChange={(e) => setAbstract(e.target.value)}
             rows={6}
             placeholder="输入论文摘要…"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-body outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-6">
           {quartileOptions.length > 0 && (
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-slate-700">JCR 分区：</span>
+              <span className="text-sm font-medium text-body">JCR 分区：</span>
               {quartileOptions.map((q) => (
-                <label key={q} className="flex items-center gap-1.5 text-sm text-slate-600">
+                <label key={q} className="flex items-center gap-1.5 text-sm text-body">
                   <input
                     type="checkbox"
                     checked={selectedQuartiles.includes(q)}
                     onChange={() => toggleQuartile(q)}
-                    className="h-4 w-4 accent-blue-600"
+                    className="h-4 w-4 accent-primary"
                   />
                   {q}
                 </label>
@@ -96,11 +94,11 @@ function RecommendPage(): React.JSX.Element {
             </div>
           )}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-700">中科院大区上限：</span>
+            <span className="text-sm font-medium text-body">中科院大区上限：</span>
             <select
               value={casZoneMax ?? ''}
               onChange={(e) => setCasZoneMax(e.target.value === '' ? null : Number(e.target.value))}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+              className="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm text-body outline-none focus:border-primary"
             >
               <option value="">不限</option>
               <option value={1}>1区</option>
@@ -112,7 +110,7 @@ function RecommendPage(): React.JSX.Element {
           <button
             onClick={run}
             disabled={!canRun}
-            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             开始推荐
           </button>
@@ -126,7 +124,7 @@ function RecommendPage(): React.JSX.Element {
       )}
 
       {error && (
-        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="flex items-start gap-3 rounded-xl border border-danger-border bg-danger-soft p-4 text-sm text-danger-text">
           <AlertTriangle size={18} className="mt-0.5 shrink-0" />
           <div>
             <p className="font-semibold">推荐失败</p>
@@ -136,7 +134,7 @@ function RecommendPage(): React.JSX.Element {
       )}
 
       {results && results.length === 0 && (
-        <p className="py-10 text-center text-sm text-slate-400">
+        <p className="py-10 text-center text-sm text-faint">
           没有符合条件的期刊，请放宽筛选条件或先完成抓取与向量化
         </p>
       )}
@@ -144,18 +142,21 @@ function RecommendPage(): React.JSX.Element {
       {results && results.length > 0 && (
         <div className="space-y-4">
           {results.map((rec, idx) => (
-            <div key={rec.journal.id} className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <div
+              key={rec.journal.id}
+              className="rounded-xl bg-surface p-5 shadow-sm ring-1 ring-border"
+            >
               <div className="flex flex-wrap items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary-strong">
                   {idx + 1}
                 </span>
-                <h3 className="text-base font-semibold text-slate-800">{rec.journal.name}</h3>
+                <h3 className="text-base font-semibold text-heading">{rec.journal.name}</h3>
                 <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
                   匹配度 {(rec.score * 100).toFixed(1)}%
                 </span>
                 <div className="flex-1" />
                 {rec.journal.impactFactor !== null && (
-                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">
+                  <span className="rounded-full bg-subtle px-2.5 py-0.5 text-xs text-body">
                     IF {rec.journal.impactFactor}
                   </span>
                 )}
@@ -171,8 +172,8 @@ function RecommendPage(): React.JSX.Element {
                 )}
               </div>
               {rec.evidence.length > 0 && (
-                <div className="mt-4 space-y-2 border-t border-slate-100 pt-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                <div className="mt-4 space-y-2 border-t border-border pt-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-faint">
                     相似证据论文
                   </p>
                   {rec.evidence.map((ev) => {
@@ -186,8 +187,8 @@ function RecommendPage(): React.JSX.Element {
                         <span className="w-14 shrink-0 text-right text-xs font-medium text-emerald-600">
                           {(ev.similarity * 100).toFixed(1)}%
                         </span>
-                        <span className="flex-1 truncate text-slate-700">{ev.title}</span>
-                        <span className="shrink-0 text-xs text-slate-400">
+                        <span className="flex-1 truncate text-body">{ev.title}</span>
+                        <span className="shrink-0 text-xs text-faint">
                           {ev.publicationDate ?? ''}
                         </span>
                         {doiUrl && (
@@ -195,7 +196,7 @@ function RecommendPage(): React.JSX.Element {
                             href={doiUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex shrink-0 items-center gap-1 text-xs text-blue-600 hover:underline"
+                            className="flex shrink-0 items-center gap-1 text-xs text-primary hover:underline"
                           >
                             DOI <ExternalLink size={11} />
                           </a>

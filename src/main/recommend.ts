@@ -56,9 +56,7 @@ export async function recommend(input: RecommendInput): Promise<JournalRecommend
     )
   }
 
-  const journals = new Map<string, JournalMeta>(
-    listJournals().map((j: JournalMeta) => [j.id, j])
-  )
+  const journals = new Map<string, JournalMeta>(listJournals().map((j: JournalMeta) => [j.id, j]))
   const results: JournalRecommendation[] = []
   for (const [journalId, items] of byJournal) {
     const journal = journals.get(journalId)

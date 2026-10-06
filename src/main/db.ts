@@ -150,9 +150,25 @@ export function seedJournals(seed: JournalSeedEntry[]): void {
   `)
   getDb().transaction((entries: JournalSeedEntry[]): void => {
     for (const e of entries) {
-      stmt.run(e.id, e.name, e.issn, e.openalexSourceId, e.impactFactor, e.jcrQuartile, e.casMajor, e.casMinor)
+      stmt.run(
+        e.id,
+        e.name,
+        e.issn,
+        e.openalexSourceId,
+        e.impactFactor,
+        e.jcrQuartile,
+        e.casMajor,
+        e.casMinor
+      )
     }
   })(seed)
+  // 清理历史重复种子：Transportmetrica B 曾以两个 id 入库（同一 ISSN）
+  getDb()
+    .prepare(
+      `UPDATE papers SET journal_id = 'transportmetrica-b' WHERE journal_id = 'transportmetrica-b-transport-dynamics'`
+    )
+    .run()
+  getDb().prepare(`DELETE FROM journals WHERE id = 'transportmetrica-b-transport-dynamics'`).run()
 }
 
 export function listJournals(): JournalMeta[] {
@@ -214,7 +230,9 @@ export function listPapers(q: PapersQuery): Paper[] {
     ORDER BY publication_date DESC
     LIMIT ? OFFSET ?
   `
-  const rows = getDb().prepare(sql).all(...params, limit, offset) as PaperRow[]
+  const rows = getDb()
+    .prepare(sql)
+    .all(...params, limit, offset) as PaperRow[]
   return rows.map(toPaper)
 }
 
@@ -233,7 +251,7 @@ export function upsertIssuePapers(
       issue = excluded.issue,
       publication_date = excluded.publication_date,
       title = excluded.title,
-      abstract = excluded.abstract,
+      abstract = COALESCE(excluded.abstract, papers.abstract),
       doi = excluded.doi,
       authors = excluded.authors,
       cited_by_count = excluded.cited_by_count
@@ -346,7 +364,11 @@ export function getEmbeddingsWithMeta(): {
     doi: row.doi,
     vector:
       row.embedding.byteOffset % 4 === 0
-        ? new Float32Array(row.embedding.buffer, row.embedding.byteOffset, row.embedding.byteLength / 4)
+        ? new Float32Array(
+            row.embedding.buffer,
+            row.embedding.byteOffset,
+            row.embedding.byteLength / 4
+          )
         : new Float32Array(
             row.embedding.buffer.slice(
               row.embedding.byteOffset,

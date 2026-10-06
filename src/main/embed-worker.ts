@@ -11,9 +11,7 @@ import { join } from 'path'
 
 const MAX_TOKENS = 512
 
-type WorkerRequest =
-  | { type: 'init'; modelDir: string }
-  | { type: 'embed'; texts: string[] }
+type WorkerRequest = { type: 'init'; modelDir: string } | { type: 'embed'; texts: string[] }
 
 let tokenizer: Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>> | null = null
 let session: InferenceSession | null = null

@@ -36,29 +36,27 @@ function JournalsPage(): React.JSX.Element {
     }
   }
 
-  const filtered = journals.filter((j) =>
-    j.name.toLowerCase().includes(query.trim().toLowerCase())
-  )
+  const filtered = journals.filter((j) => j.name.toLowerCase().includes(query.trim().toLowerCase()))
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-slate-800">期刊管理</h2>
+        <h2 className="text-xl font-bold text-heading">期刊管理</h2>
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-faint" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="按期刊名搜索…"
-            className="w-64 rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-64 rounded-lg border border-border-strong bg-surface py-2 pl-9 pr-3 text-sm text-body outline-none focus:border-primary focus:ring-2 focus:ring-primary-soft"
           />
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div className="overflow-hidden rounded-xl bg-surface shadow-sm ring-1 ring-border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <tr className="border-b border-border bg-subtle text-left text-xs font-semibold uppercase tracking-wide text-muted">
               <th className="px-4 py-3">期刊名</th>
               <th className="px-4 py-3">IF</th>
               <th className="px-4 py-3">JCR</th>
@@ -71,21 +69,21 @@ function JournalsPage(): React.JSX.Element {
           </thead>
           <tbody>
             {filtered.map((j) => (
-              <tr key={j.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-slate-800">{j.name}</td>
-                <td className="px-4 py-3 text-slate-600">{j.impactFactor ?? '—'}</td>
-                <td className="px-4 py-3 text-slate-600">{j.jcrQuartile ?? '—'}</td>
-                <td className="px-4 py-3 text-slate-600">{j.casMajor ?? '—'}</td>
+              <tr key={j.id} className="border-b border-border last:border-0 hover:bg-subtle">
+                <td className="px-4 py-3 font-medium text-heading">{j.name}</td>
+                <td className="px-4 py-3 text-body">{j.impactFactor ?? '—'}</td>
+                <td className="px-4 py-3 text-body">{j.jcrQuartile ?? '—'}</td>
+                <td className="px-4 py-3 text-body">{j.casMajor ?? '—'}</td>
                 <td className="px-4 py-3">
                   <StatusBadge status={j.fetchStatus} />
                 </td>
-                <td className="px-4 py-3 text-right text-slate-600">{j.paperCount}</td>
-                <td className="px-4 py-3 text-slate-500">{formatTime(j.lastFetchedAt)}</td>
+                <td className="px-4 py-3 text-right text-body">{j.paperCount}</td>
+                <td className="px-4 py-3 text-muted">{formatTime(j.lastFetchedAt)}</td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => updateOne(j.id)}
                     disabled={updatingId !== null || j.fetchStatus === 'fetching'}
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex items-center gap-1 rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-body hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <RefreshCw size={12} className={updatingId === j.id ? 'animate-spin' : ''} />
                     更新该刊
@@ -95,7 +93,7 @@ function JournalsPage(): React.JSX.Element {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-10 text-center text-slate-400">
+                <td colSpan={8} className="px-4 py-10 text-center text-faint">
                   没有匹配的期刊
                 </td>
               </tr>

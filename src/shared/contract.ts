@@ -11,7 +11,7 @@ export interface JournalMeta {
   issn: string | null // 用于 OpenAlex 查询的 ISSN（print 优先，其次 electronic）
   openalexSourceId: string | null // 如 'S123456789'
   impactFactor: number | null
-  jcrQuartile: string | null // 'Q1' | 'Q1/Q2' | ...
+  jcrQuartile: string | null // 'Q1' | 'Q2' | 'Q3' | 'Q4'（多分类期刊取最好分区）
   casMajor: string | null // 中科院大区，如 '工程技术(1区)'
   casMinor: string | null // 中科院小区原始字符串
   fetchStatus: 'pending' | 'fetching' | 'done' | 'error'
@@ -36,7 +36,7 @@ export interface Paper {
 // ---------- 推荐 ----------
 
 export interface RecommendFilters {
-  jcrQuartiles?: string[] // 如 ['Q1','Q1/Q2']，按期刊 jcrQuartile 精确匹配
+  jcrQuartiles?: string[] // 如 ['Q1','Q2']，按期刊 jcrQuartile 精确匹配
   casZoneMax?: number | null // 中科院大区最高接受分区，如 2 表示只留 1区/2区
 }
 
@@ -85,6 +85,7 @@ export interface AppSettings {
   embeddingApiKey: string // settingsGet 返回时恒为空串（密钥不回传渲染进程）；settingsSet 传空串表示保持原值
   embeddingModel: string // 默认 'text-embedding-3-small'
   mailto: string // OpenAlex 礼貌池邮箱，可空
+  theme: string // 界面主题 id（见 renderer/src/themes.ts），默认 'light'
 }
 
 /** settingsGet 返回给渲染进程的快照：不含密钥明文，只带"是否已配置"标记。 */
@@ -98,7 +99,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   embeddingBaseUrl: 'https://api.openai.com/v1',
   embeddingApiKey: '',
   embeddingModel: 'text-embedding-3-small',
-  mailto: ''
+  mailto: '',
+  theme: 'light'
 }
 
 // ---------- 抓取进度（主进程 → 渲染进程事件） ----------

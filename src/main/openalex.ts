@@ -104,12 +104,14 @@ export async function fetchRecentIssues(
   maxIssues: number,
   mailto: string
 ): Promise<IssuePapers[]> {
-  const filter = sourceIdOrIssn.openalexSourceId
+  const sourceFilter = sourceIdOrIssn.openalexSourceId
     ? `primary_location.source.id:https://openalex.org/${sourceIdOrIssn.openalexSourceId}`
     : sourceIdOrIssn.issn
       ? `locations.source.issn:${sourceIdOrIssn.issn}`
       : null
-  if (!filter) throw new Error('期刊缺少 OpenAlex source id 与 ISSN，无法抓取')
+  if (!sourceFilter) throw new Error('期刊缺少 OpenAlex source id 与 ISSN，无法抓取')
+  // 只收正文作品，排除 paratext（编委会、目录、封面等前置物）、editorial、correction 等
+  const filter = `${sourceFilter},type:article|review`
 
   const groups = new Map<string, { issue: IssueRef; papers: NewPaper[]; latest: string }>()
   let cursor = '*'
@@ -132,16 +134,22 @@ export async function fetchRecentIssues(
     let stop = false
     let pageAdded = false
     for (const work of results) {
+      if (!work.display_name && !work.title) continue
       const volume = work.biblio?.volume || null
       const issue = work.biblio?.issue || null
-      const key = volume === null && issue === null ? NO_ISSUE_KEY : `${volume ?? ''}|${issue ?? ''}`
+      const key =
+        volume === null && issue === null ? NO_ISSUE_KEY : `${volume ?? ''}|${issue ?? ''}`
       let group = groups.get(key)
       if (!group) {
         if (key !== NO_ISSUE_KEY && groups.size >= maxIssues) {
           stop = true
           break
         }
-        group = { issue: { volume, issue, year: parseYear(work.publication_date) }, papers: [], latest: '' }
+        group = {
+          issue: { volume, issue, year: parseYear(work.publication_date) },
+          papers: [],
+          latest: ''
+        }
         groups.set(key, group)
       }
       if (key !== NO_ISSUE_KEY || group.papers.length < NO_ISSUE_MAX_PAPERS) {

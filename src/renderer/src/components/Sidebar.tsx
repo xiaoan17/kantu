@@ -1,5 +1,6 @@
 import { LayoutDashboard, Library, FileText, Sparkles, Settings } from 'lucide-react'
 import type { PageKey } from '../App'
+import logo from '../assets/icon.png'
 
 const NAV_ITEMS: { key: PageKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: 'dashboard', label: '仪表盘', icon: LayoutDashboard },
@@ -16,10 +17,13 @@ interface SidebarProps {
 
 function Sidebar({ page, onNavigate }: SidebarProps): React.JSX.Element {
   return (
-    <aside className="flex w-56 shrink-0 flex-col bg-slate-900 text-slate-300">
-      <div className="px-5 py-6">
-        <h1 className="text-lg font-bold text-white">交通期刊选刊</h1>
-        <p className="mt-1 text-xs text-slate-400">Transport Journal Match</p>
+    <aside className="flex w-56 shrink-0 flex-col bg-sidebar text-sidebar-text">
+      <div className="flex items-center gap-3 px-5 py-6">
+        <img src={logo} alt="应用图标" className="h-10 w-10 rounded-xl" />
+        <div>
+          <h1 className="text-base font-bold text-white">交通期刊选刊</h1>
+          <p className="mt-0.5 text-xs text-sidebar-muted">Transport Journal Match</p>
+        </div>
       </div>
       <nav className="flex-1 space-y-1 px-3">
         {NAV_ITEMS.map(({ key, label, icon: Icon }) => (
@@ -28,8 +32,8 @@ function Sidebar({ page, onNavigate }: SidebarProps): React.JSX.Element {
             onClick={() => onNavigate(key)}
             className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               page === key
-                ? 'bg-slate-700/60 text-white'
-                : 'hover:bg-slate-800 hover:text-white'
+                ? 'bg-sidebar-active text-white'
+                : 'hover:bg-sidebar-hover hover:text-white'
             }`}
           >
             <Icon size={18} />

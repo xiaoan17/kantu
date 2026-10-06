@@ -19,7 +19,8 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:linux": "electron-vite build && electron-builder --linux",
+    "backfill-abstracts": "node scripts/backfill-abstracts.mjs"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",

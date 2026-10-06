@@ -23,9 +23,7 @@ function sleep(ms: number): Promise<void> {
 // 会触发 macOS 分配器崩溃（microsoft/onnxruntime#29763）。
 
 type WorkerReply =
-  | { type: 'ready' }
-  | { type: 'vectors'; vectors: number[][] }
-  | { type: 'error'; message: string }
+  { type: 'ready' } | { type: 'vectors'; vectors: number[][] } | { type: 'error'; message: string }
 
 interface LocalEngine {
   worker: Worker
@@ -35,7 +33,9 @@ interface LocalEngine {
 let localEngine: LocalEngine | null = null
 
 function localModelDir(modelId: string): string {
-  const base = is.dev ? join(__dirname, '../../resources/models') : join(process.resourcesPath, 'models')
+  const base = is.dev
+    ? join(__dirname, '../../resources/models')
+    : join(process.resourcesPath, 'models')
   return join(base, modelId)
 }
 

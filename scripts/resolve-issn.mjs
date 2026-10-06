@@ -12,12 +12,22 @@ const REQUEST_INTERVAL_MS = 200
 // 人工兜底：key 为分区表中的原始期刊名。
 // query 覆盖搜索词；issn/openalexSourceId 齐全时跳过 API 直接使用。
 const MANUAL_FIXES = {
-  'Transportation Research Part A': { query: 'Transportation Research Part A: Policy and Practice' },
+  'Transportation Research Part A': {
+    query: 'Transportation Research Part A: Policy and Practice'
+  },
   'Transportation Research Part B': { query: 'Transportation Research Part B: Methodological' },
-  'Transportation Research Part C': { query: 'Transportation Research Part C: Emerging Technologies' },
-  'Transportation Research Part D': { query: 'Transportation Research Part D: Transport and Environment' },
-  'Transportation Research Part E': { query: 'Transportation Research Part E: Logistics and Transportation Review' },
-  'Transportation Research Part F': { query: 'Transportation Research Part F: Traffic Psychology and Behaviour' },
+  'Transportation Research Part C': {
+    query: 'Transportation Research Part C: Emerging Technologies'
+  },
+  'Transportation Research Part D': {
+    query: 'Transportation Research Part D: Transport and Environment'
+  },
+  'Transportation Research Part E': {
+    query: 'Transportation Research Part E: Logistics and Transportation Review'
+  },
+  'Transportation Research Part F': {
+    query: 'Transportation Research Part F: Traffic Psychology and Behaviour'
+  },
   'Transport reviews': { query: 'Transport Reviews' },
   'Accident Analysis and Prevention': { query: 'Accident Analysis & Prevention' },
   'Transportmetrica B': { query: 'Transportmetrica B: Transport Dynamics' },
@@ -32,12 +42,16 @@ const MANUAL_FIXES = {
   'Journal of Traffic and Transportation Engineering-English Edition': {
     query: 'Journal of Traffic and Transportation Engineering (English Edition)'
   },
-  'Proceedings of the Institution of Mechanical Engineers Part F-Journal of Rail and Rapid Transit': {
-    query: 'Proceedings of the Institution of Mechanical Engineers Part F Journal of Rail and Rapid Transit'
-  },
-  'Proceedings of The Institution of Mechanical Engineers Part D-Journal of Automobile Engineering': {
-    query: 'Proceedings of the Institution of Mechanical Engineers Part D Journal of Automobile Engineering'
-  },
+  'Proceedings of the Institution of Mechanical Engineers Part F-Journal of Rail and Rapid Transit':
+    {
+      query:
+        'Proceedings of the Institution of Mechanical Engineers Part F Journal of Rail and Rapid Transit'
+    },
+  'Proceedings of The Institution of Mechanical Engineers Part D-Journal of Automobile Engineering':
+    {
+      query:
+        'Proceedings of the Institution of Mechanical Engineers Part D Journal of Automobile Engineering'
+    },
   'Journal of Transportation Engineering Part A: Systems': {
     query: 'Journal of Transportation Engineering Part A Systems'
   },
@@ -63,7 +77,10 @@ const MANUAL_FIXES = {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 function normalize(s) {
-  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+  return (s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
 }
 
 const UA = { 'User-Agent': 'transport-journal-match/0.1' }
@@ -83,9 +100,12 @@ async function searchSources(query) {
     }
     if (res.status === 429 || res.status >= 500) {
       const retryAfter = Number(res.headers.get('retry-after'))
-      const wait = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 2000 * 2 ** attempt
+      const wait =
+        Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 2000 * 2 ** attempt
       if (wait > MAX_RATE_LIMIT_WAIT_MS) {
-        throw new Error(`OpenAlex ${res.status} for "${query}" (retry-after ${Math.round(wait / 1000)}s, giving up)`)
+        throw new Error(
+          `OpenAlex ${res.status} for "${query}" (retry-after ${Math.round(wait / 1000)}s, giving up)`
+        )
       }
       await sleep(wait)
       continue
@@ -146,7 +166,8 @@ if (!process.argv.includes('--force')) {
     for (const p of prev) {
       if (p.issn && p.openalexSourceId) cached.set(p.id, p)
     }
-    if (cached.size > 0) console.log(`Reusing ${cached.size} resolved entries from existing seed file`)
+    if (cached.size > 0)
+      console.log(`Reusing ${cached.size} resolved entries from existing seed file`)
   } catch {
     // no previous seed file, resolve everything
   }
@@ -167,7 +188,9 @@ for (let i = 0; i < journals.length; i++) {
   }
   const hit = cached.get(j.id)
   if (hit) {
-    console.log(`[${i + 1}/${journals.length}] ${j.name} -> (cached) | issn=${hit.issn} | ${hit.openalexSourceId}`)
+    console.log(
+      `[${i + 1}/${journals.length}] ${j.name} -> (cached) | issn=${hit.issn} | ${hit.openalexSourceId}`
+    )
     seed.push({ ...j, issn: hit.issn, openalexSourceId: hit.openalexSourceId })
     continue
   }
@@ -183,13 +206,17 @@ for (let i = 0; i < journals.length; i++) {
       ;({ issn, openalexSourceId } = extract(best))
       matchedName = best ? best.display_name : null
     } catch (err) {
-      console.error(`[${i + 1}/${journals.length}] ${j.name}: OpenAlex search failed: ${err.message}, trying Crossref fallback`)
+      console.error(
+        `[${i + 1}/${journals.length}] ${j.name}: OpenAlex search failed: ${err.message}, trying Crossref fallback`
+      )
       try {
         const fb = await resolveViaCrossref(query)
         ;({ issn, openalexSourceId } = fb)
         matchedName = fb.matchedName ? `${fb.matchedName} (crossref)` : null
       } catch (err2) {
-        console.error(`[${i + 1}/${journals.length}] ${j.name}: Crossref fallback failed: ${err2.message}`)
+        console.error(
+          `[${i + 1}/${journals.length}] ${j.name}: Crossref fallback failed: ${err2.message}`
+        )
       }
     }
     await sleep(REQUEST_INTERVAL_MS)
