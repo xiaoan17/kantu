@@ -22,6 +22,8 @@
 想跳过数小时的抓取，可下载 `data-vN` 里的 `tjm.db` 放到
 `~/Library/Application Support/transport-journal-match/tjm.db`，启动即有完整语料。
 
+▶ [8 秒产品氛围短片](https://github.com/xiaoan17/kantu/releases/download/v1.0.0/kantu-intro-h264.mp4)（1080p，Seedance 生成）
+
 ## 功能
 
 - **期刊语料库**：内置 72 本交通运输领域期刊（含 JCR 分区、中科院分区、影响因子），
