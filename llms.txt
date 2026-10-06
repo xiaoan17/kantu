@@ -1,0 +1,42 @@
+# 刊途 · Kantu
+
+> 交通运输领域的论文选刊桌面工具。输入论文标题与摘要，从本地语料库做语义检索，推荐最合适的
+> 投稿期刊并给出证据论文。Electron + React 19 + TypeScript + better-sqlite3，Embedding 走本地
+> onnxruntime-web（纯 WASM），**运行期完全离线**。
+
+## 快速使用
+
+- **安装包与数据快照**：https://github.com/xiaoan17/kantu/releases
+  - `kantu-<version>.dmg` — macOS (Apple Silicon)，ad-hoc 签名未公证，首次需右键「打开」
+  - `data-vN` Release 的 `tjm.db` — 成品论文库（26,907 篇），放到下面路径即可跳过数小时抓取
+- **数据库路径**（`userData` 目录）：
+  - macOS `~/Library/Application Support/transport-journal-match/tjm.db`
+  - Windows `%APPDATA%\transport-journal-match\tjm.db`
+  - Linux `~/.config/transport-journal-match/tjm.db`
+- **语料口径**（唯一的"推荐语料"定义，用原生 `sqlite3` 查时须手写，因为 App 的
+  `has_abstract()` 自定义函数在 CLI 中不存在）：
+  `embedding IS NOT NULL AND is_retracted = 0 AND abstract IS NOT NULL AND trim(abstract) <> ''`
+- **命令行能力**（都不需要 API key；维护脚本默认 dry-run，加 `--apply` 才写库）：
+  - `npm run migrate-db -- "<db 路径>"` — 应用表结构迁移，幂等
+  - `npm run prune-non-articles` — 清理封面页 / 社论 / 更正 / 目录等非正文条目
+  - `npm run sync-retracted` — 按 OpenAlex `is_retracted` 标记撤稿论文
+  - `npm run backfill-browser` — 回填出版商没同步给 OpenAlex 的摘要
+  - `npm run dev` / `build:local` / `build:mac:adhoc` — 开发与打包
+- **关键约束**：`npm run build:mac` 在无法访问 Apple 时间戳服务器时会静默卡死在 codesign，
+  未公证分发用 `build:mac:adhoc`；不要直接 `cp tjm.db`（WAL 会丢数据），用
+  `sqlite3 "$DB" ".backup /tmp/tjm.db"`；CI 用 `npm ci --ignore-scripts`，涉及 Electron 的
+  测试必须能自行 skip。
+- **完整 agent 上手说明**：https://raw.githubusercontent.com/xiaoan17/kantu/main/AGENTS.md
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/xiaoan17/kantu/main/README.md): 产品定位、下载、功能清单、从源码构建
+- [AGENTS.md](https://raw.githubusercontent.com/xiaoan17/kantu/main/AGENTS.md): agent 上手路径、语料口径、环境约束与坑
+- [语料卫生](https://raw.githubusercontent.com/xiaoan17/kantu/main/docs/corpus-hygiene.md): 非正文清理规则 R1/R2/R3、撤稿单向标记、老库迁移、数据库快照分发
+- [摘要回填手册](https://raw.githubusercontent.com/xiaoan17/kantu/main/docs/abstract-backfill.md): 各出版商摘要提取位置与实测成功率、IEEE 站内 JSON 接口、Elsevier `view=META_ABS` 与配额、状态文件安全设计
+- [构建与发布](https://raw.githubusercontent.com/xiaoan17/kantu/main/docs/build-and-release.md): codesign 挂起排查、ad-hoc 与 Developer ID、Release 结构、发布前校验清单
+
+## Optional
+
+- [命名与兼容性约定](https://raw.githubusercontent.com/xiaoan17/kantu/main/docs/naming.md): 包名 / appId / userData 路径的历史与兼容约束
+- [OpenAlex](https://openalex.org/): 论文元数据来源（CC0），免 API key，设置页填邮箱可进礼貌池

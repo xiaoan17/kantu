@@ -83,12 +83,14 @@ macOS 分配器崩溃（[microsoft/onnxruntime#29763](https://github.com/microso
 
 ## 文档
 
-| 文档                                      | 内容                                       |
-| ----------------------------------------- | ------------------------------------------ |
-| [语料卫生](docs/corpus-hygiene.md)        | 非正文清理、撤稿标记、表结构迁移、快照分发 |
-| [摘要回填手册](docs/abstract-backfill.md) | 回填出版商没同步给 OpenAlex 的摘要         |
-| [构建与发布](docs/build-and-release.md)   | 签名与公证、Release 结构、发布校验清单     |
-| [命名与兼容性约定](docs/naming.md)        | 包名 / appId / userData 路径的历史与兼容   |
+| 文档                                      | 内容                                         |
+| ----------------------------------------- | -------------------------------------------- |
+| **[AGENTS.md](AGENTS.md)**                | **给 AI agent 的上手路径、语料口径与环境坑** |
+| [llms.txt](llms.txt)                      | 机器可读的文档索引（llms.txt 约定）          |
+| [语料卫生](docs/corpus-hygiene.md)        | 非正文清理、撤稿标记、表结构迁移、快照分发   |
+| [摘要回填手册](docs/abstract-backfill.md) | 回填出版商没同步给 OpenAlex 的摘要           |
+| [构建与发布](docs/build-and-release.md)   | 签名与公证、Release 结构、发布校验清单       |
+| [命名与兼容性约定](docs/naming.md)        | 包名 / appId / userData 路径的历史与兼容     |
 
 ## 运维脚本
 
