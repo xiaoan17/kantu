@@ -1,10 +1,10 @@
 {
-  "name": "transport-journal-match",
+  "name": "kantu",
   "version": "1.0.0",
-  "description": "交通运输领域投稿期刊匹配桌面工具：本地语料库 + 离线 Embedding 语义推荐",
+  "description": "刊途 · 论文选刊助手：为每一篇研究，找到合适的期刊。",
   "main": "./out/main/index.js",
   "author": "xiaoan17",
-  "homepage": "https://github.com/xiaoan17/transport-journal-match",
+  "homepage": "https://github.com/xiaoan17/kantu",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

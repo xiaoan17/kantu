@@ -21,8 +21,8 @@ function Sidebar({ page, onNavigate }: SidebarProps): React.JSX.Element {
       <div className="flex items-center gap-3 px-5 py-6">
         <img src={logo} alt="应用图标" className="h-10 w-10 rounded-xl" />
         <div>
-          <h1 className="text-base font-bold text-white">交通期刊选刊</h1>
-          <p className="mt-0.5 text-xs text-sidebar-muted">Transport Journal Match</p>
+          <h1 className="text-base font-bold text-white">刊途</h1>
+          <p className="mt-0.5 text-xs text-sidebar-muted">论文选刊助手</p>
         </div>
       </div>
       <nav className="flex-1 space-y-1 px-3">

@@ -1,8 +1,17 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, Menu } from 'electron'
+import { mkdirSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initAppData, registerIpcHandlers } from './ipc-handlers'
+
+// 保留旧的内部名称和存储路径，兼容已有数据库、设置与 safeStorage 身份。
+// 对外名称由打包配置、窗口标题、应用菜单和关于面板统一显示为「刊途」。
+app.setName('transport-journal-match')
+const userDataPath = join(app.getPath('appData'), 'transport-journal-match')
+mkdirSync(userDataPath, { recursive: true })
+app.setPath('userData', userDataPath)
+app.setPath('sessionData', userDataPath)
 
 function createWindow(): void {
   // Create the browser window.
@@ -42,6 +51,34 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.tjm.app')
+  app.setAboutPanelOptions({
+    applicationName: '刊途',
+    applicationVersion: app.getVersion()
+  })
+  if (process.platform === 'darwin') {
+    Menu.setApplicationMenu(
+      Menu.buildFromTemplate([
+        {
+          label: '刊途',
+          submenu: [
+            { label: '关于刊途', role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { label: '隐藏刊途', role: 'hide' },
+            { role: 'hideOthers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { label: '退出刊途', role: 'quit' }
+          ]
+        },
+        { role: 'fileMenu' },
+        { role: 'editMenu' },
+        { role: 'viewMenu' },
+        { role: 'windowMenu' }
+      ])
+    )
+  }
 
   initAppData()
   registerIpcHandlers()

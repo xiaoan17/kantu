@@ -1,5 +1,5 @@
 appId: com.tjm.app
-productName: transport-journal-match
+productName: 刊途
 extraResources:
   - from: resources/journals.seed.json
     to: journals.seed.json
@@ -23,7 +23,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: transport-journal-match
+  executableName: kantu
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

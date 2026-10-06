@@ -1,4 +1,8 @@
-# transport-journal-match
+# 刊途 · Kantu
+
+**论文选刊助手** — 为每一篇研究，找到合适的期刊。
+
+GitHub：[xiaoan17/kantu](https://github.com/xiaoan17/kantu) · [命名与兼容性约定](docs/naming.md)
 
 交通运输领域的**投稿期刊匹配桌面工具**：输入论文标题和摘要，基于本地语料库的语义相似度，推荐最适合投稿的期刊，并给出每本期刊的证据论文。
 
@@ -34,7 +38,7 @@ npm run dev
 
 ```bash
 npm run build:local
-open dist/mac-arm64/transport-journal-match.app  # Apple Silicon；Intel Mac 的目录为 mac
+open dist/mac-arm64/刊途.app  # Apple Silicon；Intel Mac 的目录为 mac
 ```
 
 `build:local` 使用 ad-hoc 签名，不会自动选择本机钥匙串中的证书，也不会生成 DMG 或安装到 `/Applications`。需要安装时，可把生成的 `.app` 拖入“应用程序”目录。
