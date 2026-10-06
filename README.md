@@ -8,7 +8,8 @@
 推荐最适合投稿的期刊，并给出每本期刊的证据论文。**完全本地运行**，抓取之后向量化与推荐
 全在离线完成，不依赖任何远程 Embedding 服务。
 
-[命名与兼容性约定](docs/naming.md) · [摘要回填手册](docs/abstract-backfill.md) · [语料卫生](docs/corpus-hygiene.md)
+文档：[命名与兼容性约定](docs/naming.md) · [摘要回填手册](docs/abstract-backfill.md) ·
+[语料卫生](docs/corpus-hygiene.md) · [构建与发布](docs/build-and-release.md)
 
 ## 下载
 
@@ -45,26 +46,16 @@ npm run dev          # 开发窗口，热更新
 
 首次使用：仪表盘 →「开始抓取全部期刊」（可只选几本试）→「运行向量化」→ 去「推荐」页输入标题与摘要。
 
-在 Mac 上生成可双击启动的本地应用：
+生成可双击启动的本地应用与分发安装包（dmg + zip）：
 
 ```bash
-npm run build:local
-open dist/mac-arm64/刊途.app     # Apple Silicon；Intel Mac 目录为 mac
+npm run build:local        # dist/mac-arm64/刊途.app，ad-hoc 签名，不出 dmg
+npm run build:mac:adhoc    # dist/kantu-1.0.0.dmg + zip ← 分发用这个
 ```
 
-分发安装包（dmg + zip）：
-
-```bash
-npm run build:mac:adhoc    # 推荐：ad-hoc 签名，不联网
-npm run build:mac          # 有 Developer ID 证书时用；需要能访问 Apple 时间戳服务器
-npm run build:win
-npm run build:linux
-```
-
-> **`build:mac` 会在本机装有代码签名证书时自动使用它，而 `codesign --timestamp`
-> 需要联上 Apple 时间戳服务器；该网络不通时会卡死在 codesign 且不报错**（进程 `STAT=S`、
-> CPU 接近 0）。本项目的分发包未公证，直接用 `build:mac:adhoc` 即可——它与 `build:local`
-> 的签名方式一致，跳过时间戳服务器，几十秒完成。
+> `npm run build:mac` 会启用钥匙串里的 Developer ID 证书，而 `codesign --timestamp`
+> 需要联上 Apple 时间戳服务器；网络不通时它会**静默卡死**。未公证的本地分发请用
+> `build:mac:adhoc`。详见 [构建与发布](docs/build-and-release.md)。
 
 ## 技术栈
 
