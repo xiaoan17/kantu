@@ -55,6 +55,25 @@
 
 若已导入 `tjm.db` 快照，可跳过抓取直接点名向量化，几秒内即可开始推荐。
 
+## 卸载
+
+1. 把「应用程序」里的 `刊途.app` 拖到废纸篓即完成卸载（无后台服务、无自启动项）。
+2. 想彻底清干净，再删数据目录——**里面装着论文库与设置，实测约 539MB**：
+
+   ```bash
+   rm -rf ~/Library/Application\ Support/transport-journal-match
+   ```
+
+| 文件              | 大小       | 说明                                                   |
+| ----------------- | ---------- | ------------------------------------------------------ |
+| `tjm.db`          | ~113MB     | 主库：论文、摘要、向量                                 |
+| `tjm.db.before-*` | **~425MB** | 维护脚本写库前自动做的备份，确认不需要回滚即可一并删除 |
+| `settings.json`   | —          | 只在设置页填过 API key / 邮箱时才存在                  |
+
+Windows / Linux 是 `%APPDATA%` / `~/.config` 下的同名目录。
+
+> ⚠️ 删数据目录不可恢复。想以后重装接着用现有语料，只删 App 即可。
+
 ## 从源码运行 / 构建
 
 ```bash
@@ -105,6 +124,28 @@ macOS 分配器崩溃（[microsoft/onnxruntime#29763](https://github.com/microso
 | `python3 scripts/make-og-image.py`      | 用 Seedream 底图合成产品 OG 图          |
 
 所有维护脚本**默认 dry-run**，加 `--apply` 才写库；涉及删除的会先自动备份并校验行数。
+
+## 给 AI agent 用
+
+不用启动 GUI 也能直接读写这份语料。完整上手说明见 [AGENTS.md](AGENTS.md)，机器可读索引见
+[llms.txt](llms.txt)。**最容易踩的坑**：`has_abstract()` 是 App 注册的自定义 SQLite 函数，
+**`sqlite3` CLI 里没有**，用命令行查语料必须手写等价 SQL：
+
+```sql
+-- 推荐语料，等价于 App 的 getEmbeddingsWithMeta()
+select count(*) from papers
+where embedding is not null and is_retracted = 0
+  and abstract is not null and trim(abstract) <> '';
+```
+
+其余要点：
+
+- **数据库位置**：macOS `~/Library/Application Support/transport-journal-match/tjm.db`；
+  Windows `%APPDATA%`、Linux `~/.config` 下同路径。
+- **不要直接 `cp tjm.db`**：库开了 WAL，最近写入可能还在 `tjm.db-wal` 里，直接拷贝会丢数据；
+  取一致快照用 `sqlite3 "$DB" ".backup /tmp/tjm.db"`。
+- **全套能力都在命令行**：`migrate-db`（幂等迁移）、`prune-non-articles`、`sync-retracted`、
+  `backfill-browser`；都默认 dry-run，加 `--apply` 才写库，都不需要 API key。
 
 ## 开发校验
 
